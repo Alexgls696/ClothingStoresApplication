@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Подключение к БД</title>
+</head>
+<body>
+<h1>Введите данные для подключения</h1>
+<form action="/database/connect" method="post" name="credentials">
+    <label for="username">Логин:</label>
+    <input type="text" id="username" name="username" required><br>
+
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password" required><br>
+
+    <button type="submit">Подключиться</button>
+</form>
+</body>
+</html>
