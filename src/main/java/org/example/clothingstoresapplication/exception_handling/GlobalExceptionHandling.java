@@ -17,4 +17,11 @@ public class GlobalExceptionHandling {
         exceptionData.setMessage(exception.getMessage());
         return new ResponseEntity<>(exceptionData, HttpStatus.REQUEST_TIMEOUT);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionData>exceptionHandler(IllegalStateException exception){
+        ExceptionData exceptionData = new ExceptionData();
+        exceptionData.setMessage("Сессия была закрыта");
+        return new ResponseEntity<>(exceptionData, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }

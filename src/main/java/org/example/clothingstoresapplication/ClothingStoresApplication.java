@@ -24,41 +24,4 @@ public class ClothingStoresApplication {
         SpringApplication.run(ClothingStoresApplication.class, args);
     }
 
-    private LocalSessionFactoryBean sessionFactory;
-
-    /*@Bean
-    public DataSource dataSource(){
-        String url = "jdbc:postgresql://localhost:5432/clothing_stores?useSSL=false&serverTimezone=UTC";
-        ComboPooledDataSource dataSource = null;
-        try{
-            dataSource = new ComboPooledDataSource();
-            dataSource.setDriverClass("org.postgresql.Driver");
-            dataSource.setJdbcUrl(url);
-            dataSource.setUser("postgres");
-            dataSource.setPassword("admin");
-        }catch (PropertyVetoException e){
-            throw new RuntimeException(e);
-        }
-        return dataSource;
-    }
-
-    @Bean("entityManagerFactory")
-    public LocalSessionFactoryBean sessionFactory()  {
-        sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("org.example.clothingstoresapplication");
-        return sessionFactory;
-    }
-
-    public void updateSessionFactory(DataSource newDataSource) throws IOException {
-        // Закрытие текущего SessionFactory, если он существует
-        if (sessionFactory != null) {
-            sessionFactory.destroy(); // Закрытие текущего SessionFactory
-        }
-        // Создание нового SessionFactory с новыми данными
-        sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(newDataSource);
-        sessionFactory.setPackagesToScan("org.example.clothingstoresapplication");
-        sessionFactory.afterPropertiesSet();
-    }*/
 }

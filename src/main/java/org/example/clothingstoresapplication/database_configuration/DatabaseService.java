@@ -44,6 +44,13 @@ public class DatabaseService {
             statement.close();
             connection.close();
         }catch (SQLException e){
+            if(sessionFactory!=null){
+                Session currentSession = sessionFactory.getCurrentSession();
+                if (currentSession != null && currentSession.isOpen()) {
+                    currentSession.close();
+                }
+                sessionFactory.close();
+            }
             throw new SQLTimeoutException("Не удалось установить соединение");
         }
         return dataSource;
