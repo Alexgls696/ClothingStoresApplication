@@ -2,6 +2,7 @@ package org.example.clothingstoresapplication.database_configuration;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import lombok.Getter;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
@@ -12,36 +13,43 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
+import java.sql.Statement;
 import java.util.Properties;
 
-@Service
-@EnableTransactionManagement
 @Getter
+@Service
 public class DatabaseService {
     private DataSource dataSource;
     private SessionFactory sessionFactory;
-
 
     public void configureDatabase(DatabaseCredentials credentials) throws Exception {
         this.dataSource = createDataSource(credentials);
         this.sessionFactory = createSessionFactory(this.dataSource);
     }
 
-    private DataSource createDataSource(DatabaseCredentials credentials) {
-        ComboPooledDataSource dataSource = new ComboPooledDataSource();
+    private DataSource createDataSource(DatabaseCredentials credentials) throws SQLTimeoutException {
+         BasicDataSource dataSource = new BasicDataSource();
         try{
-            dataSource.setDriverClass("org.postgresql.Driver");
-            dataSource.setJdbcUrl(credentials.getUrl());
-            dataSource.setUser(credentials.getUsername());
+            dataSource.setDriverClassName("org.postgresql.Driver");
+            dataSource.setUrl(credentials.getUrl());
+            dataSource.setUsername(credentials.getUsername());
             dataSource.setPassword(credentials.getPassword());
-        }catch (PropertyVetoException e){
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
+
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+            statement.executeQuery("select 1");
+            statement.close();
+            connection.close();
+        }catch (SQLException e){
+            throw new SQLTimeoutException("Не удалось установить соединение");
         }
         return dataSource;
     }
 
-    private SessionFactory createSessionFactory(DataSource dataSource) throws IOException {
+    private SessionFactory createSessionFactory(DataSource dataSource) throws Exception {
         if (sessionFactory != null) {
             Session currentSession = sessionFactory.getCurrentSession();
             if (currentSession != null && currentSession.isOpen()) {

@@ -21,6 +21,12 @@ public class CategoriesServiceImpl implements CategoriesService{
         return categoriesRepository.findAll();
     }
 
+    @Override
+    public Category getCategoryById(int id) {
+        return categoriesRepository.findById(id);
+    }
+
+
 
     @Override
     public Category addCategory(Category category) {
@@ -28,10 +34,6 @@ public class CategoriesServiceImpl implements CategoriesService{
     }
 
 
-    @Override
-    public Category getCategoryById(int id) {
-        return categoriesRepository.findById(id);
-    }
 
 
     @Override
