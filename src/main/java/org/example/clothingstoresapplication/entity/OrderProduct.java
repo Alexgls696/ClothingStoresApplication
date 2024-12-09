@@ -15,8 +15,11 @@ import lombok.ToString;
 public class OrderProduct {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer orderProductsId;
+  @Column(name = "order_products_id")
+  private Integer orderProductId;
+  @Column(name = "product_id")
   private Integer productId;
+  @Column(name = "order_id")
   private Integer orderId;
   private Integer count;
 }

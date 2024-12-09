@@ -30,5 +30,5 @@ public class Customer {
     private String phoneNumber;
 
     @Column(name = "order_id")
-    private int orderId;
+    private Integer orderId;
 }

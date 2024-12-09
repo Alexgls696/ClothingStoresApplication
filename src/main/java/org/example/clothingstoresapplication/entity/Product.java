@@ -15,10 +15,15 @@ import lombok.ToString;
 public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "product_id")
   private int productId;
+  @Column(name = "product_name")
   private String productName;
   private String price;
+  @Column(name="category_id")
   private Integer categoryId;
+  @Column(name = "type_id")
   private Integer typeId;
+  @Column(name = "supplier_id")
   private Integer supplierId;
 }

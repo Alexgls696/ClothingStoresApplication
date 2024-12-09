@@ -1,6 +1,8 @@
 package org.example.clothingstoresapplication.repository;
 
 import org.example.clothingstoresapplication.entity.Category;
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.List;
 
 public interface CategoriesRepository{

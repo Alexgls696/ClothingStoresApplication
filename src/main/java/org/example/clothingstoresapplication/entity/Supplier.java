@@ -15,6 +15,8 @@ import lombok.ToString;
 public class Supplier {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "supplier_id")
   private Integer supplierId;
+  @Column(name = "supplier_name")
   private String supplierName;
 }

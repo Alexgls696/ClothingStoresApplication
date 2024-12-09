@@ -15,9 +15,14 @@ import lombok.ToString;
 public class Employee {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "employee_id")
   private int employeeId;
+
+  @Column(name = "first_name")
   private String firstName;
+  @Column(name = "last_name")
   private String lastName;
+  @Column(name = "store_id")
   private Integer storeId;
   private String position;
   private String email;
