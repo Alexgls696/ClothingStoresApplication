@@ -33,13 +33,13 @@ public class DynamicDatabaseConfig {
         DynamicDataSource dynamicDataSource = new DynamicDataSource();
         dynamicDataSource.setTargetDataSources(dataSources);
 
-        /*// Настройка DataSource по умолчанию
+        // Настройка DataSource по умолчанию
         BasicDataSource defaultDataSource = new BasicDataSource();
         defaultDataSource.setDriverClassName("org.postgresql.Driver");
         defaultDataSource.setUrl("jdbc:postgresql://localhost:5432/clothing_stores?useSSL=false&serverTimezone=UTC");
-        defaultDataSource.setUsername("postgres");
-        defaultDataSource.setPassword("admin");
-        dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);*/
+        defaultDataSource.setUsername("_anon");
+        defaultDataSource.setPassword("12341234");
+        dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);
 
         return dynamicDataSource;
     }
@@ -71,12 +71,10 @@ public class DynamicDatabaseConfig {
     public void reconfigureSessionFactoryAndTransactionManager(String key) {
         ApplicationContext context = ApplicationContextProvider.getApplicationContext();
 
-        // Переконфигурируем SessionFactory
         LocalContainerEntityManagerFactoryBean sessionFactoryBean = context.getBean(LocalContainerEntityManagerFactoryBean.class);
         sessionFactoryBean.setDataSource((DataSource) dataSources.get(key));
-        sessionFactoryBean.afterPropertiesSet(); // Применяем изменения
+        sessionFactoryBean.afterPropertiesSet();
 
-        // Переконфигурируем TransactionManager
         JpaTransactionManager transactionManager = context.getBean(JpaTransactionManager.class);
         transactionManager.setEntityManagerFactory(sessionFactoryBean.getObject());
     }

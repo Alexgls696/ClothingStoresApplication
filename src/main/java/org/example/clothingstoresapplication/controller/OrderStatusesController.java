@@ -1,8 +1,11 @@
 package org.example.clothingstoresapplication.controller;
 
+import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.OrderStatus;
 import org.example.clothingstoresapplication.repository.OrderStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,5 +38,21 @@ public class OrderStatusesController {
     @DeleteMapping("/{id}")
     public void deleteOrderStatus(@PathVariable("id") int id){
         orderStatusRepository.deleteById(id);
+    }
+
+    private Pageable pageable(Sort sort){
+        return Pageable.unpaged(sort);
+    }
+
+    @GetMapping("orderById/{type}")
+    public Iterable<OrderStatus> getCategoriesById(@PathVariable("type") String type){
+        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"statusId");
+        return orderStatusRepository.findAllOrderById(pageable(sort));
+    }
+
+    @GetMapping("orderByStatusName/{type}")
+    public Iterable<OrderStatus> getCategoriesByName(@PathVariable("type") String type){
+        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"statusName");
+        return orderStatusRepository.findAllOrderByName(pageable(sort));
     }
 }

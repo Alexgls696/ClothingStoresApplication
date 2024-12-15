@@ -1,8 +1,12 @@
 package org.example.clothingstoresapplication.controller;
 
+import org.aspectj.weaver.ast.Or;
+import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.Order;
 import org.example.clothingstoresapplication.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,5 +39,33 @@ public class OrdersController {
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable("id") int id){
         orderRepository.deleteById(id);
+    }
+
+    private Pageable pageable(Sort sort){
+        return Pageable.unpaged(sort);
+    }
+
+    @GetMapping("orderById/{type}")
+    public Iterable<Order> getCategoriesById(@PathVariable("type") String type){
+        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"orderId");
+        return orderRepository.findAllOrderById(pageable(sort));
+    }
+
+    @GetMapping("orderByOrderDate/{type}")
+    public Iterable<Order> getCategoriesByOrderDate(@PathVariable("type") String type){
+        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"orderDate");
+        return orderRepository.findAllOrderByOrderDate(pageable(sort));
+    }
+
+    @GetMapping("orderByStoreId/{type}")
+    public Iterable<Order> getCategoriesByStoreId(@PathVariable("type") String type){
+        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"storeId");
+        return orderRepository.findAllOrderByStoreId(pageable(sort));
+    }
+
+    @GetMapping("orderByStatusId/{type}")
+    public Iterable<Order> getCategoriesByStatusId(@PathVariable("type") String type){
+        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"statusId");
+        return orderRepository.findAllOrderByStatusId(pageable(sort));
     }
 }

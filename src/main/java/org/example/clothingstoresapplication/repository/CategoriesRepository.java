@@ -13,8 +13,8 @@ import java.util.List;
 
 @Repository
 public interface CategoriesRepository extends CrudRepository<Category, Integer> {
-
     Page<Category> findAll(Pageable pageable);
+
     @Query(value = "from Category ")
     Page<Category> findAllOrderById(Pageable pageable);
 
