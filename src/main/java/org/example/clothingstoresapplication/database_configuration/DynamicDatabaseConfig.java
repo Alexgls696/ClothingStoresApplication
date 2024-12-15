@@ -33,13 +33,13 @@ public class DynamicDatabaseConfig {
         DynamicDataSource dynamicDataSource = new DynamicDataSource();
         dynamicDataSource.setTargetDataSources(dataSources);
 
-        // Настройка DataSource по умолчанию
+        /*// Настройка DataSource по умолчанию
         BasicDataSource defaultDataSource = new BasicDataSource();
         defaultDataSource.setDriverClassName("org.postgresql.Driver");
         defaultDataSource.setUrl("jdbc:postgresql://localhost:5432/clothing_stores?useSSL=false&serverTimezone=UTC");
         defaultDataSource.setUsername("postgres");
         defaultDataSource.setPassword("admin");
-        dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);
+        dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);*/
 
         return dynamicDataSource;
     }
