@@ -19,11 +19,19 @@ public class Product {
   private int productId;
   @Column(name = "product_name")
   private String productName;
-  private String price;
+  private Double price;
   @Column(name="category_id")
   private Integer categoryId;
   @Column(name = "type_id")
   private Integer typeId;
   @Column(name = "supplier_id")
   private Integer supplierId;
+
+  public Product(String productName, Double price, Integer categoryId, Integer typeId, Integer supplierId) {
+    this.productName = productName;
+    this.price = price;
+    this.categoryId = categoryId;
+    this.typeId = typeId;
+    this.supplierId = supplierId;
+  }
 }

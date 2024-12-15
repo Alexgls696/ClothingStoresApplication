@@ -22,12 +22,12 @@ public class DatabaseService {
     private DataSource dataSource;
     private SessionFactory sessionFactory;
 
-    public void configureDatabase(DatabaseCredentials credentials) throws Exception {
+    /*public void configureDatabase(DatabaseCredentials credentials) throws Exception {
         this.dataSource = createDataSource(credentials);
         this.sessionFactory = createSessionFactory(this.dataSource);
-    }
+    }*/
 
-    private DataSource createDataSource(DatabaseCredentials credentials) throws SQLTimeoutException {
+    /*private DataSource createDataSource(DatabaseCredentials credentials) throws SQLTimeoutException {
          BasicDataSource dataSource = new BasicDataSource();
         try{
             dataSource.setDriverClassName("org.postgresql.Driver");
@@ -72,6 +72,5 @@ public class DatabaseService {
 
         sessionFactoryBean.afterPropertiesSet(); // Инициализация SessionFactory
         return sessionFactoryBean.getObject();
-    }
-
+    }*/
 }

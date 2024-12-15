@@ -18,13 +18,13 @@ public class SuppliersController {
     }
 
     @GetMapping
-    public List<Supplier> getSuppliers() {
+    public Iterable<Supplier> getSuppliers() {
         return supplierRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Supplier getSupplierById(@PathVariable("id") int id){
-        return supplierRepository.findById(id);
+        return supplierRepository.findById(id).orElse(null);
     }
 
     @PostMapping
@@ -34,6 +34,6 @@ public class SuppliersController {
 
     @DeleteMapping("/{id}")
     public void deleteSupplier(@PathVariable("id") int id){
-        supplierRepository.delete(id);
+        supplierRepository.deleteById(id);
     }
 }

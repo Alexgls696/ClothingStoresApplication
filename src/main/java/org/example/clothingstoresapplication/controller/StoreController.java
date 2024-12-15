@@ -18,13 +18,13 @@ public class StoreController {
     }
 
     @GetMapping
-    public List<Store> getStores() {
+    public Iterable<Store> getStores() {
         return storeRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Store getStoreById(@PathVariable("id") int id){
-        return storeRepository.findById(id);
+        return storeRepository.findById(id).orElse(null);
     }
 
     @PostMapping
@@ -34,6 +34,6 @@ public class StoreController {
 
     @DeleteMapping("/{id}")
     public void deleteStore(@PathVariable("id") int id){
-        storeRepository.delete(id);
+        storeRepository.deleteById(id);
     }
 }

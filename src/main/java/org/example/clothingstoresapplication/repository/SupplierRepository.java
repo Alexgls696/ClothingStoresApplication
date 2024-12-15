@@ -1,12 +1,13 @@
 package org.example.clothingstoresapplication.repository;
 
+import org.example.clothingstoresapplication.entity.Product;
 import org.example.clothingstoresapplication.entity.Supplier;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface SupplierRepository {
-    List<Supplier> findAll();
-    Supplier findById(int id);
-    Supplier save(Supplier supplier);
-    void delete(int id);
+@Repository
+public interface SupplierRepository extends CrudRepository<Supplier, Integer> {
+
 }

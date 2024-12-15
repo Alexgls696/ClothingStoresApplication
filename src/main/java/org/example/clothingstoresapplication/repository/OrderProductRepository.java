@@ -2,12 +2,14 @@ package org.example.clothingstoresapplication.repository;
 
 import org.example.clothingstoresapplication.entity.Order;
 import org.example.clothingstoresapplication.entity.OrderProduct;
+import org.example.clothingstoresapplication.entity.Product;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Random;
 
-public interface OrderProductRepository {
-    List<OrderProduct> findAll();
-    OrderProduct findById(int id);
-    OrderProduct save(OrderProduct order);
-    void delete(int id);
+@Repository
+public interface OrderProductRepository extends CrudRepository<OrderProduct, Integer> {
+
 }

@@ -20,13 +20,13 @@ public class CustomersController {
     }
 
     @GetMapping
-    public List<Customer> getCustomers() {
+    public Iterable<Customer> getCustomers() {
         return customersRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Customer getCustomerById(@PathVariable("id") int id){
-        return customersRepository.findById(id);
+        return customersRepository.findById(id).orElse(null);
     }
 
     @PostMapping
@@ -37,6 +37,6 @@ public class CustomersController {
 
     @DeleteMapping("/{id}")
     public void deleteCustomer(@PathVariable("id") int id){
-        customersRepository.delete(id);
+        customersRepository.deleteById(id);
     }
 }

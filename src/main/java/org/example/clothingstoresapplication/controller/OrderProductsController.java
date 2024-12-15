@@ -20,13 +20,13 @@ public class OrderProductsController {
     }
 
     @GetMapping
-    public List<OrderProduct> getOrderProducts() {
+    public Iterable<OrderProduct> getOrderProducts() {
         return orderProductRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public OrderProduct getOrderProductById(@PathVariable("id") int id){
-        return orderProductRepository.findById(id);
+        return orderProductRepository.findById(id).orElse(null);
     }
 
     @PostMapping
@@ -36,6 +36,6 @@ public class OrderProductsController {
 
     @DeleteMapping("/{id}")
     public void deleteOrderProduct(@PathVariable("id") int id){
-        orderProductRepository.delete(id);
+        orderProductRepository.deleteById(id);
     }
 }

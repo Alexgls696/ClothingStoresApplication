@@ -23,7 +23,7 @@ public class CategoriesServiceImpl implements CategoriesService{
 
     @Override
     public Category getCategoryById(int id) {
-        return categoriesRepository.findById(id);
+        return categoriesRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -42,6 +42,6 @@ public class CategoriesServiceImpl implements CategoriesService{
 
     @Override
     public void deleteCategory(int id) {
-        categoriesRepository.delete(id);
+        categoriesRepository.deleteById(id);
     }
 }

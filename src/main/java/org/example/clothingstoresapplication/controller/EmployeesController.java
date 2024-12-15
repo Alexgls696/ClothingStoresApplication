@@ -20,13 +20,13 @@ public class EmployeesController {
     }
 
     @GetMapping
-    public List<Employee> getEmployees() {
+    public Iterable<Employee> getEmployees() {
         return employeeRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Employee getEmployeeById(@PathVariable("id") int id){
-        return employeeRepository.findById(id);
+        return employeeRepository.findById(id).orElse(null);
     }
 
     @PostMapping
@@ -36,6 +36,6 @@ public class EmployeesController {
 
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable("id") int id){
-        employeeRepository.delete(id);
+        employeeRepository.deleteById(id);
     }
 }

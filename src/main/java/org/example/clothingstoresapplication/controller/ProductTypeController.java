@@ -20,13 +20,13 @@ public class ProductTypeController {
     }
 
     @GetMapping
-    public List<ProductsType> getProductsTypes() {
+    public Iterable<ProductsType> getProductsTypes() {
         return productsTypeRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public ProductsType getProductsTypeById(@PathVariable("id") int id){
-        return productsTypeRepository.findById(id);
+        return productsTypeRepository.findById(id).orElse(null);
     }
 
     @PostMapping
@@ -36,6 +36,6 @@ public class ProductTypeController {
 
     @DeleteMapping("/{id}")
     public void deleteProductType(@PathVariable("id") int id){
-        productsTypeRepository.delete(id);
+        productsTypeRepository.deleteById(id);
     }
 }

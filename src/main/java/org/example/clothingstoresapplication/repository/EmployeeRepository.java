@@ -2,15 +2,13 @@ package org.example.clothingstoresapplication.repository;
 
 import org.example.clothingstoresapplication.entity.Customer;
 import org.example.clothingstoresapplication.entity.Employee;
+import org.example.clothingstoresapplication.entity.Product;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface EmployeeRepository {
-    List<Employee> findAll();
+@Repository
+public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
 
-    Employee findById(int id);
-
-    Employee save(Employee category);
-
-    void delete(int id);
 }

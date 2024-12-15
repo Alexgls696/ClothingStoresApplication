@@ -18,13 +18,13 @@ public class OrderStatusesController {
     }
 
     @GetMapping
-    public List<OrderStatus> getOrderStatuses() {
+    public Iterable<OrderStatus> getOrderStatuses() {
         return orderStatusRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public OrderStatus getOrderStatusById(@PathVariable("id") int id){
-        return orderStatusRepository.findById(id);
+        return orderStatusRepository.findById(id).orElse(null);
     }
 
     @PostMapping
@@ -34,6 +34,6 @@ public class OrderStatusesController {
 
     @DeleteMapping("/{id}")
     public void deleteOrderStatus(@PathVariable("id") int id){
-        orderStatusRepository.delete(id);
+        orderStatusRepository.deleteById(id);
     }
 }
