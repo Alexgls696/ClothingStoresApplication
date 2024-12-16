@@ -8,13 +8,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/categories")
-public class CategoriesRestController {
+public class CategoriesController {
     private CategoriesRepository categoriesRepository;
 
     @Autowired
-    public CategoriesRestController(CategoriesRepository categoriesRepository) {
+    public CategoriesController(CategoriesRepository categoriesRepository) {
         this.categoriesRepository = categoriesRepository;
     }
 
@@ -31,6 +33,17 @@ public class CategoriesRestController {
     @PostMapping
     public Category addCategory(@RequestBody Category category){
         return categoriesRepository.save(category);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<Category> categories){
+        categoriesRepository.saveAll(categories);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        System.out.println();
+        //categoriesRepository.deleteAllById(ids);
     }
 
     @PutMapping
@@ -50,7 +63,7 @@ public class CategoriesRestController {
     @GetMapping("orderById/{type}")
     public Iterable<Category> getCategoriesById(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"categoryId");
-        return categoriesRepository.findAllOrderByCategoryName(pageable(sort));
+        return categoriesRepository.findAllOrderById(pageable(sort));
     }
 
     @GetMapping("orderByName/{type}")

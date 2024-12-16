@@ -24,7 +24,7 @@ public class EmployeesController {
 
     @GetMapping
     public Iterable<Employee> getEmployees() {
-        return employeeRepository.findAll();
+        return employeeRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -35,6 +35,16 @@ public class EmployeesController {
     @PostMapping
     public Employee addEmployee(@RequestBody Employee employee) {
         return employeeRepository.save(employee);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<Employee> employees) {
+        employeeRepository.saveAll(employees);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        employeeRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")

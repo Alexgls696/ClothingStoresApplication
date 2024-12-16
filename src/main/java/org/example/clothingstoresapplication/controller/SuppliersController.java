@@ -1,11 +1,14 @@
 package org.example.clothingstoresapplication.controller;
 
+import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.Supplier;
 import org.example.clothingstoresapplication.repository.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/suppliers")
@@ -19,7 +22,7 @@ public class SuppliersController {
 
     @GetMapping
     public Iterable<Supplier> getSuppliers() {
-        return supplierRepository.findAll();
+        return supplierRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -30,6 +33,15 @@ public class SuppliersController {
     @PostMapping
     public Supplier addSupplier(@RequestBody Supplier supplier) {
         return supplierRepository.save(supplier);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<Supplier> suppliers){
+        supplierRepository.saveAll(suppliers);
+    }
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        supplierRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")
@@ -50,6 +62,6 @@ public class SuppliersController {
     @GetMapping("orderBySupplierName/{type}")
     public Iterable<Supplier> getCategoriesBySupplierName(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"supplierName");
-        return supplierRepository.findAllOrderById(pageable(sort));
+        return supplierRepository.findAllOrderBySupplierName(pageable(sort));
     }
 }

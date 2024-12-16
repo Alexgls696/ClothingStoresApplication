@@ -15,7 +15,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
-import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -32,15 +31,12 @@ public class DynamicDatabaseConfig {
     public DynamicDataSource dynamicDataSource() {
         DynamicDataSource dynamicDataSource = new DynamicDataSource();
         dynamicDataSource.setTargetDataSources(dataSources);
-
-        // Настройка DataSource по умолчанию
         BasicDataSource defaultDataSource = new BasicDataSource();
         defaultDataSource.setDriverClassName("org.postgresql.Driver");
         defaultDataSource.setUrl("jdbc:postgresql://localhost:5432/clothing_stores?useSSL=false&serverTimezone=UTC");
-        defaultDataSource.setUsername("_anon");
+        defaultDataSource.setUsername("_admin");
         defaultDataSource.setPassword("12341234");
         dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);
-
         return dynamicDataSource;
     }
 
@@ -52,20 +48,17 @@ public class DynamicDatabaseConfig {
         dataSource.setPassword(credentials.getPassword());
         dataSource.setInitialSize(3);
 
-        // Проверяем подключение
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().executeQuery("select 1");
         } catch (SQLException e) {
             throw new SQLException("Ошибка подключения: " + e.getMessage());
         }
 
-        // Добавляем новый источник данных
         dataSources.put(key, dataSource);
 
-        // Переконфигурация DynamicDataSource
         DynamicDataSource dynamicDataSource = dynamicDataSource();
         dynamicDataSource.setTargetDataSources(dataSources);
-        dynamicDataSource.afterPropertiesSet(); // Применяем изменения
+        dynamicDataSource.afterPropertiesSet();
     }
 
     public void reconfigureSessionFactoryAndTransactionManager(String key) {

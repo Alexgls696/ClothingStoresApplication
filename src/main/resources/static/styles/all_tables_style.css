@@ -1,0 +1,5 @@
+#actions-container{
+    display: flex;
+    margin: 0 1vw 1vh 1vw;
+    column-gap: 1vh;
+}

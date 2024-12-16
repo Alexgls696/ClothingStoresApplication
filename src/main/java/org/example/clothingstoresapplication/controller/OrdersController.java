@@ -23,7 +23,7 @@ public class OrdersController {
 
     @GetMapping
     public Iterable<Order> getOrders() {
-        return orderRepository.findAll();
+        return orderRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -34,6 +34,16 @@ public class OrdersController {
     @PostMapping
     public Order addOrder(@RequestBody Order order) {
         return orderRepository.save(order);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<Order> orders){
+        orderRepository.saveAll(orders);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        orderRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")
@@ -51,7 +61,7 @@ public class OrdersController {
         return orderRepository.findAllOrderById(pageable(sort));
     }
 
-    @GetMapping("orderByOrderDate/{type}")
+    @GetMapping("orderByDate/{type}")
     public Iterable<Order> getCategoriesByOrderDate(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"orderDate");
         return orderRepository.findAllOrderByOrderDate(pageable(sort));

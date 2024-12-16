@@ -24,7 +24,7 @@ public class ProductTypeController {
 
     @GetMapping
     public Iterable<ProductsType> getProductsTypes() {
-        return productsTypeRepository.findAll();
+        return productsTypeRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -35,6 +35,16 @@ public class ProductTypeController {
     @PostMapping
     public ProductsType addOrder(@RequestBody ProductsType productsType) {
         return productsTypeRepository.save(productsType);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<ProductsType> productsTypes){
+        productsTypeRepository.saveAll(productsTypes);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        productsTypeRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")

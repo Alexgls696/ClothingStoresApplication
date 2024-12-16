@@ -32,13 +32,7 @@ public class ProductsController {
 
     @GetMapping
     public Iterable<Product> getProducts() {
-        try {
-            System.out.println(entityManagerFactory.getDataSource().getConnection().getMetaData().getUserName());
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        var saved = productRepository.save(new Product("Название3", 124.0,1,1,1));
-        return productRepository.findAll();
+        return productRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -49,6 +43,16 @@ public class ProductsController {
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
         return productRepository.save(product);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<Product> products) {
+        productRepository.saveAll(products);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        productRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Repository;
 public interface SupplierRepository extends CrudRepository<Supplier, Integer> {
     Page<Supplier> findAll(Pageable pageable);
 
-    @Query(value = "from Category ")
+    @Query(value = "from Supplier ")
     Page<Supplier> findAllOrderById(Pageable pageable);
 
-    @Query(value = "from Category ")
+    @Query(value = "from Supplier ")
     Page<Supplier> findAllOrderBySupplierName(Pageable pageable);
 }

@@ -23,7 +23,7 @@ public class CustomersController {
 
     @GetMapping
     public Iterable<Customer> getCustomers() {
-        return customersRepository.findAll();
+        return customersRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -34,6 +34,16 @@ public class CustomersController {
     @PostMapping
     public Customer addCustomer(@RequestBody Customer customer) {
         return customersRepository.save(customer);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateCustomer(@RequestBody List<Customer>customers) {
+        customersRepository.saveAll(customers);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        customersRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")
@@ -69,7 +79,7 @@ public class CustomersController {
         return customersRepository.findAllOrderByEmail(pageable(sort));
     }
 
-    @GetMapping("orderByIdPhoneNumber/{type}")
+    @GetMapping("orderByPhoneNumber/{type}")
     public Iterable<Customer> getCustomersByPhoneNumber(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"phoneNumber");
         return customersRepository.findAllOrderByPhoneNumber(pageable(sort));

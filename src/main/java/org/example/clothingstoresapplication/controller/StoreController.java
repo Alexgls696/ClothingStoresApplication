@@ -22,7 +22,7 @@ public class StoreController {
 
     @GetMapping
     public Iterable<Store> getStores() {
-        return storeRepository.findAll();
+        return storeRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -33,6 +33,16 @@ public class StoreController {
     @PostMapping
     public Store addStore(@RequestBody Store store) {
         return storeRepository.save(store);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<Store> stores){
+        storeRepository.saveAll(stores);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        storeRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")

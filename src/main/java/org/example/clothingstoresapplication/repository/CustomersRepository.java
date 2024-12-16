@@ -33,5 +33,4 @@ public interface CustomersRepository extends CrudRepository<Customer, Integer>{
     @Query(value = "from Customer ")
     Page<Customer> findAllOrderByIdOrderId(Pageable pageable);
 
-
 }

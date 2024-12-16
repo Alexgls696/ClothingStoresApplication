@@ -24,7 +24,7 @@ public class OrderProductsController {
 
     @GetMapping
     public Iterable<OrderProduct> getOrderProducts() {
-        return orderProductRepository.findAll();
+        return orderProductRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -35,6 +35,16 @@ public class OrderProductsController {
     @PostMapping
     public OrderProduct addOrder(@RequestBody OrderProduct orderProduct) {
         return orderProductRepository.save(orderProduct);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<OrderProduct> orderProducts) {
+        orderProductRepository.saveAll(orderProducts);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        orderProductRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")
@@ -66,7 +76,7 @@ public class OrderProductsController {
 
     @GetMapping("orderByCount/{type}")
     public Iterable<OrderProduct> getCategoriesByCount(@PathVariable("type") String type){
-        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"countId");
+        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"count");
         return orderProductRepository.findAllOrderByCount(pageable(sort));
     }
 }

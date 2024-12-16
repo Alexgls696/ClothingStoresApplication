@@ -22,7 +22,7 @@ public class OrderStatusesController {
 
     @GetMapping
     public Iterable<OrderStatus> getOrderStatuses() {
-        return orderStatusRepository.findAll();
+        return orderStatusRepository.findAll(Pageable.unpaged());
     }
 
     @GetMapping("/{id}")
@@ -33,6 +33,16 @@ public class OrderStatusesController {
     @PostMapping
     public OrderStatus addOrder(@RequestBody OrderStatus orderStatus) {
         return orderStatusRepository.save(orderStatus);
+    }
+
+    @PostMapping("/updateAll")
+    public void updateAll(@RequestBody List<OrderStatus> orderStatuses) {
+        orderStatusRepository.saveAll(orderStatuses);
+    }
+
+    @PostMapping("/deleteAll")
+    public void deleteAll(@RequestBody List<Integer>ids){
+        orderStatusRepository.deleteAllById(ids);
     }
 
     @DeleteMapping("/{id}")
