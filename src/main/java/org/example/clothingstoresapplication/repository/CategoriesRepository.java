@@ -1,5 +1,6 @@
 package org.example.clothingstoresapplication.repository;
 
+import jakarta.transaction.Transactional;
 import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.Product;
 import org.springframework.data.domain.Page;

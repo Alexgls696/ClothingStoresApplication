@@ -24,7 +24,7 @@ public class DatabaseController {
 
     private DynamicDatabaseConfig dynamicDatabaseConfig;
 
-    private String currentUser = DynamicDatabaseConfig.DEFAULT_USER;
+    public static String currentUser = DynamicDatabaseConfig.DEFAULT_USER;
     private String lastUser;
     private String role;
 
@@ -40,11 +40,12 @@ public class DatabaseController {
             DynamicDataSource.setCurrentDataSource(userKey);
             dynamicDatabaseConfig.reconfigureSessionFactoryAndTransactionManager(userKey);
             currentUser = userKey;
-            model.addAttribute("message", "Подключение успешно!");
+            return "redirect:/pages/categories";
+
         } catch (Exception e) {
             model.addAttribute("message", "Ошибка подключения: " + e.getMessage());
+            return "result";
         }
-        return "result"; // Страница результата
     }
 
 

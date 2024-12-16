@@ -2,7 +2,6 @@ package org.example.clothingstoresapplication.controller;
 
 import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.repository.CategoriesRepository;
-import org.example.clothingstoresapplication.service.CategoriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,6 +18,7 @@ public class CategoriesController {
     public CategoriesController(CategoriesRepository categoriesRepository) {
         this.categoriesRepository = categoriesRepository;
     }
+
 
     @GetMapping
     public Iterable<Category>getCategories() {
@@ -42,8 +42,7 @@ public class CategoriesController {
 
     @PostMapping("/deleteAll")
     public void deleteAll(@RequestBody List<Integer>ids){
-        System.out.println();
-        //categoriesRepository.deleteAllById(ids);
+        categoriesRepository.deleteAllById(ids);
     }
 
     @PutMapping
@@ -54,6 +53,7 @@ public class CategoriesController {
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable("id") int id){
         categoriesRepository.deleteById(id);
+        System.out.println();
     }
 
     private Pageable pageable(Sort sort){

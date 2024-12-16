@@ -58,7 +58,6 @@ async function deleteById(table,id) {
         }
 
         const button = document.querySelector(`button[data-id="${id}"]`);
-        console.log(button);
         if (button) {
             let td = button.parentNode;
             let tr = td.parentNode;
@@ -72,6 +71,7 @@ async function deleteById(table,id) {
 }
 
 async function addDeleteButtonListeners(name,table) {
+
     let access = await checkRoleForDelete();
     if(!access){
         return;

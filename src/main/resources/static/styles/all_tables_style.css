@@ -3,3 +3,11 @@
     margin: 0 1vw 1vh 1vw;
     column-gap: 1vh;
 }
+
+.menu-panel{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    column-gap: 1vw;
+    margin-right: 1vw;
+}

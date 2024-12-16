@@ -1,11 +1,9 @@
+
 package org.example.clothingstoresapplication.database_configuration;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.hibernate.Session;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.hibernate.query.NativeQuery;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +18,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
