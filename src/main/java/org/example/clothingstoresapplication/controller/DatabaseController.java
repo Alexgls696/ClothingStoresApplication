@@ -5,18 +5,21 @@ import org.example.clothingstoresapplication.database_configuration.ApplicationC
 import org.example.clothingstoresapplication.database_configuration.DatabaseCredentials;
 import org.example.clothingstoresapplication.database_configuration.DynamicDataSource;
 import org.example.clothingstoresapplication.database_configuration.DynamicDatabaseConfig;
+import org.example.clothingstoresapplication.repository.DatabaseActionsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.http.HttpRequest;
 
 @Controller
 @RequestMapping("/database")
 public class DatabaseController {
+
+    @Autowired
+    private DatabaseActionsRepository actionsRepository;
 
     @RequestMapping("/connect")
     public String showConnectPage(){
@@ -42,5 +45,10 @@ public class DatabaseController {
             model.addAttribute("message", "Ошибка подключения: " + e.getMessage());
         }
         return "result"; // Страница результата
+    }
+
+    @GetMapping("getRole")
+    public @ResponseBody ResponseEntity<String> getRole(){
+        return ResponseEntity.ok(actionsRepository.getUserRole());
     }
 }
