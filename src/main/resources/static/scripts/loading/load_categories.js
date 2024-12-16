@@ -1,5 +1,5 @@
-class Category{
-    constructor(categoryId,categoryName) {
+class Category {
+    constructor(categoryId, categoryName) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
@@ -7,45 +7,50 @@ class Category{
 
 
 const ip = location.host;
-async function getCategories(orderBy){
-    try{
+
+async function getCategories(orderBy) {
+    try {
         const response = await fetch(`http://${ip}/api/categories${orderBy}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const categoryData = await response.json();
         const data = categoryData.content;
-        return data.map(category=>{
-            return new Category(category.categoryId,category.categoryName);
+        return data.map(category => {
+            return new Category(category.categoryId, category.categoryName);
         })
-    }catch (error){
+    } catch (error) {
         console.log(error);
     }
 }
 
-function showCategories(categories){
+async function showCategories(categories) {
     const categoriesTable = document.getElementById('categories-table');
-    while (categoriesTable.hasChildNodes()){
+    let access = await checkRoleForDelete();
+
+    while (categoriesTable.hasChildNodes()) {
         categoriesTable.removeChild(categoriesTable.firstChild);
     }
 
     categoriesTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="category-id-header" class="header">ID</th>' +
         '<th id="category-name-header" class="header">Название</th>' +
-        '<th>Удаление</th>' +
-        '</tr></thead>'
+        (access ? '<th>Удаление</th>' : '') + // Условно добавляем заголовок столбца
+        '</tr></thead>';
+
     let tbody = document.createElement('tbody');
-    categories.forEach(category=>{
-      tbody.innerHTML += `<tr>
+    categories.forEach(category => {
+        tbody.innerHTML += `<tr>
 <td>${category.categoryId}</td>
 <td>${category.categoryName}</td>
- <td>
- <button class="btn btn-danger btn-sm delete-button" data-id="${category.categoryId}">
- Удалить
- </button>
- </td>
-</tr>`
+${access ? `<td>
+<button class="btn btn-danger btn-sm delete-button" data-id="${category.categoryId}">
+Удалить
+</button>
+</td>` : ''} 
+</tr>`;
     });
+
     categoriesTable.appendChild(tbody);
     addRowClickListeners();
 }
@@ -56,9 +61,9 @@ let sortCategory = {
     name: '/asc'
 };
 
-async function showSortedCategories(orderBy){
+async function showSortedCategories(orderBy) {
     categories = await getCategories(orderBy);
-    showCategories(categories);
+    await showCategories(categories);
     addHeadersListeners();
 }
 
@@ -68,12 +73,12 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortCategory.id = sortCategory.id === '/asc' ? '/desc' : '/asc'; // Меняем порядок
-        await showSortedCategories('/orderById'+sortCategory.id);
+        await showSortedCategories('/orderById' + sortCategory.id);
     });
 
     name.addEventListener('click', async () => {
-        sortCategory.name = sortCategory.name=== '/asc' ? '/desc' : '/asc'; // Меняем порядок
-        await showSortedCategories('/orderByName'+sortCategory.name);
+        sortCategory.name = sortCategory.name === '/asc' ? '/desc' : '/asc'; // Меняем порядок
+        await showSortedCategories('/orderByName' + sortCategory.name);
     });
 }
 
@@ -95,7 +100,7 @@ function makeRowEditable(row) {
 function makeRowReadOnly(row) {
     const cells = Array.from(row.children);
     cells.forEach((cell, index) => {
-        if (index > 0 && index < 2) { // Пропускаем первую ячейку (ID)
+        if (index > 0) { // Пропускаем первую ячейку (ID)
             const input = cell.querySelector('input');
             if (input) {
                 cell.textContent = input.value.trim();
@@ -124,7 +129,7 @@ function collectEditedData() {
         const nameInput = row.children[1].querySelector('input');
         if (nameInput) {
             const name = nameInput.value.trim();
-            editedData.push({ categoryId: id, categoryName: name });
+            editedData.push({categoryId: id, categoryName: name});
         }
         makeRowReadOnly(row); // Приводим строку обратно в "только для чтения"
     });
@@ -164,9 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
     addDeleteAllButton('api/categories/deleteAll')
 });
 
-
-
 //Добавление-----------------------------------------------------------------------------------------------------------------------
+
+
 function createModal() {
     const modalHtml = `
     <div class="modal" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
@@ -220,7 +225,7 @@ function addCategoryModalListener() {
             return;
         }
 
-        const newCategory = { categoryName };
+        const newCategory = {categoryName};
 
         try {
             const response = await fetch(`http://${ip}/api/categories`, {
@@ -251,7 +256,7 @@ function addCategoryModalListener() {
     closeButton.addEventListener('click', hideModal);
 }
 
-function addAddObjectButton(){
+function addAddObjectButton() {
     const addButton = document.createElement('button');
     const container = document.getElementById('actions-container');
     addButton.textContent = 'Добавить';
@@ -261,12 +266,11 @@ function addAddObjectButton(){
 }
 
 let categories = null;
-(async() =>{
+(async () => {
     categories = await getCategories('/orderById/asc');
-    showCategories(categories);
+    await showCategories(categories);
     addHeadersListeners();
-    addDeleteButtonListeners('категорию','categories');
-
+    await addDeleteButtonListeners('категорию', 'categories');
 
     createModal();
     addCategoryModalListener();

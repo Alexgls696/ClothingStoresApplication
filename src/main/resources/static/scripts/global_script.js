@@ -33,7 +33,11 @@ async function deleteAllEntities(apiPath) {
     }
 }
 
-function addDeleteAllButton(apiPath) {
+async function addDeleteAllButton(apiPath) {
+    let access = await checkRoleForDelete();
+    if(!access){
+        return;
+    }
     const deleteAllButton = document.createElement('button');
     const container = document.getElementById('actions-container');
     deleteAllButton.textContent = 'Удалить все';
@@ -43,7 +47,7 @@ function addDeleteAllButton(apiPath) {
 }
 
 //------------------------Удаление по id-----------------------------------------------------------------------
-async function deleteCategoryById(table,id) {
+async function deleteById(table,id) {
     try {
         const response = await fetch(`http://${ip}/api/${table}/${id}`, {
             method: 'DELETE',
@@ -67,15 +71,18 @@ async function deleteCategoryById(table,id) {
     }
 }
 
-function addDeleteButtonListeners(name,table) {
+async function addDeleteButtonListeners(name,table) {
+    let access = await checkRoleForDelete();
+    if(!access){
+        return;
+    }
     const deleteButtons = document.querySelectorAll('.delete-button');
     deleteButtons.forEach((button) => {
         button.addEventListener('click', async (event) => {
             const id = event.target.getAttribute('data-id');
             if (confirm(`Вы уверены, что хотите удалить ${name} с ID ${id}?`)) {
-                await deleteCategoryById(table,id);
+                await deleteById(table,id);
             }
         });
     });
 }
-

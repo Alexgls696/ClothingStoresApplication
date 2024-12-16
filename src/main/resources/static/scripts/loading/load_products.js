@@ -45,7 +45,7 @@ let sortProducts = {
 
 async function showSortedProducts(orderBy) {
     products = await getProducts(orderBy);
-    showProducts(products);
+    await showProducts(products);
     addHeadersListeners();
 }
 
@@ -88,8 +88,10 @@ function addHeadersListeners() {
     });
 }
 
-function showProducts(products) {
+async function showProducts(products) {
     const productsTable = document.getElementById('products-table');
+    let access = await checkRoleForDelete();
+
     productsTable.innerHTML = `
         <thead class="table-dark">
             <tr>
@@ -99,9 +101,10 @@ function showProducts(products) {
                 <th id="product-categoryId-header" class="header">ID Категории</th>
                 <th id="product-typeId-header" class="header">ID Типа продукта</th>
                 <th id="product-supplierId-header" class="header">ID Производителя</th>
-                <th>Удаление</th>
+                ${access ? '<th>Удаление</th>' : ''}
             </tr>
         </thead>`;
+
     let tbody = document.createElement('tbody');
     products.forEach(product => {
         tbody.innerHTML += `
@@ -112,13 +115,14 @@ function showProducts(products) {
                 <td>${product.categoryId}</td>
                 <td>${product.typeId}</td>
                 <td>${product.supplierId}</td>
-                <td>
+                ${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${product.productId}">
 Удалить
 </button>
-</td>
-</tr>`;
+</td>` : ''}
+            </tr>`;
     });
+
     productsTable.appendChild(tbody);
     addRowClickListeners();
 }
@@ -315,7 +319,7 @@ function addProductModalListener() {
                 addedProduct.supplierId
             ));
 
-            showProducts(products);
+            await showProducts(products);
             addHeadersListeners();
 
             hideProductModal();
@@ -341,9 +345,9 @@ function addProductButton() {
 let products = null;
 (async () => {
     products = await getProducts('/orderById/asc');
-    showProducts(products);
+    await showProducts(products);
     addHeadersListeners();
-    addDeleteButtonListeners('товар', 'products');
+    await addDeleteButtonListeners('товар', 'products');
 
     createProductModal();
     addProductModalListener();

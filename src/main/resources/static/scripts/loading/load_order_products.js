@@ -35,14 +35,18 @@ let sortOrderProducts = {
     count: '/asc',
 };
 
-function showOrderProducts(orderProducts) {
+async function showOrderProducts(orderProducts) {
     const orderProductsTable = document.getElementById('order-products-table');
+    let access = await checkRoleForDelete();
+
     orderProductsTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="order-product-id-header" class="header">ID</th>' +
         '<th id="order-product-productId-header" class="header">ID Продукта</th>' +
         '<th id="order-product-orderId-header" class="header">ID Заказа</th>' +
         '<th id="order-product-count-header" class="header">Количество</th>' +
-        '<th>Удаление</th></tr></thead>';
+        (access ? '<th>Удаление</th>' : '') +
+        '</tr></thead>';
+
     let tbody = document.createElement('tbody');
     orderProducts.forEach(orderProduct => {
         tbody.innerHTML += `<tr>
@@ -50,20 +54,21 @@ function showOrderProducts(orderProducts) {
 <td>${orderProduct.productId}</td>
 <td>${orderProduct.orderId}</td>
 <td>${orderProduct.count}</td>
-<td>
+${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${orderProduct.orderProductId}">
 Удалить
 </button>
-</td>
+</td>` : ''}
 </tr>`;
     });
+
     orderProductsTable.appendChild(tbody);
     addRowClickListeners();
 }
 
 async function showSortedOrderProducts(orderBy) {
     orderProducts = await getOrderProducts(orderBy);
-    showOrderProducts(orderProducts);
+    await showOrderProducts(orderProducts);
     addHeadersListeners();
 }
 
@@ -273,7 +278,7 @@ function addOrderProductModalListener() {
                 addedOrderProduct.count
             ));
 
-            showOrderProducts(orderProducts);
+            await showOrderProducts(orderProducts);
             addHeadersListeners();
 
             hideOrderProductModal(); // Закрытие модального окна
@@ -299,9 +304,9 @@ function addOrderProductButton() {
 let orderProducts = null;
 (async () => {
     orderProducts = await getOrderProducts('/orderById/asc');
-    showOrderProducts(orderProducts);
+    await showOrderProducts(orderProducts);
     addHeadersListeners();
-    addDeleteButtonListeners('товар-заказ', 'orderProducts');
+    await addDeleteButtonListeners('товар-заказ', 'orderProducts');
 
     createOrderProductModal();
     addOrderProductModalListener();

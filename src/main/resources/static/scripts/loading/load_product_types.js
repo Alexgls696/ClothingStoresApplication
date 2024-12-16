@@ -28,23 +28,26 @@ let sortProductTypes = {
     typeName: '/asc'
 };
 
-function showProductTypes(productTypes) {
+async function showProductTypes(productTypes) {
     const productTypesTable = document.getElementById('product-types-table');
+    let access = await checkRoleForDelete();
+
     productTypesTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="product-type-id-header" class="header">ID</th>' +
         '<th id="product-type-type-name-header" class="header">Название</th>' +
-        '<th>Удаление</th>' +
+        (access ? '<th>Удаление</th>' : '') +
         '</tr></thead>';
+
     let tbody = document.createElement('tbody');
     productTypes.forEach(productType => {
         tbody.innerHTML += `<tr>
 <td>${productType.typeId}</td>
 <td>${productType.typeName}</td>
-<td>
+${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${productType.typeId}">
 Удалить
 </button>
-</td>
+</td>` : ''}
 </tr>`;
     });
     productTypesTable.appendChild(tbody);
@@ -53,7 +56,7 @@ function showProductTypes(productTypes) {
 
 async function showSortedProductTypes(orderBy) {
     productTypes = await getProductTypes(orderBy);
-    showProductTypes(productTypes);
+    await showProductTypes(productTypes);
     addHeadersListeners();
 }
 
@@ -233,7 +236,7 @@ function addProductTypeModalListener() {
                 addedProductType.typeName
             ));
 
-            showProductTypes(productTypes);
+            await showProductTypes(productTypes);
             addHeadersListeners();
 
             hideProductTypeModal();
@@ -259,9 +262,9 @@ function addProductTypeButton() {
 let productTypes = null;
 (async () => {
     productTypes = await getProductTypes('/orderById/asc');
-    showProductTypes(productTypes);
+    await showProductTypes(productTypes);
     addHeadersListeners();
-    addDeleteButtonListeners('тип товара', 'productTypes');
+    await addDeleteButtonListeners('тип товара', 'productTypes');
 
     createProductTypeModal();
     addProductTypeModalListener();

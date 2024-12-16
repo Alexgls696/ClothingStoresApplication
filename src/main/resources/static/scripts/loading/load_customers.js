@@ -34,8 +34,10 @@ async function getCustomers(orderBy) {
     }
 }
 
-function showCustomers(customers) {
+async function showCustomers(customers) {
     const customersTable = document.getElementById('customers-table');
+    let access = await checkRoleForDelete();
+
     customersTable.innerHTML = `
         <thead class="table-dark">
             <tr>
@@ -45,9 +47,10 @@ function showCustomers(customers) {
                 <th id="customer-email-header" class="header">Почта</th>
                 <th id="customer-phoneNumber-header" class="header">Номер телефона</th>
                 <th id="customer-orderId-header" class="header">ID заказа</th>
-                <th>Удаление</th>
+                ${access ? '<th>Удаление</th>' : ''}
             </tr>
         </thead>`;
+
     let tbody = document.createElement('tbody');
     customers.forEach(customer => {
         tbody.innerHTML += `
@@ -58,13 +61,14 @@ function showCustomers(customers) {
                 <td>${customer.email}</td>
                 <td>${customer.phoneNumber}</td>
                 <td>${customer.orderId}</td>
-                <td>
+                ${access ? `<td>
                 <button class="btn btn-danger btn-sm delete-button" data-id="${customer.customerId}">
                     Удалить
                 </button>
-            </td>
+            </td>` : ''}
             </tr>`;
     });
+
     customersTable.appendChild(tbody);
     addRowClickListeners();
 }
@@ -80,7 +84,7 @@ let sortCustomers = {
 
 async function showSortedCustomers(orderBy) {
     customers = await getCustomers(orderBy);
-    showCustomers(customers);
+    await showCustomers(customers);
     addHeadersListeners();
 }
 
@@ -318,7 +322,7 @@ function addCustomerModalListener() {
                 addedCustomer.orderId
             ));
 
-            showCustomers(customers);
+            await showCustomers(customers);
             addHeadersListeners();
 
             hideCustomerModal(); // Закрытие модального окна
@@ -348,9 +352,9 @@ function addCustomerButton() {
 let customers = null;
 (async () => {
     customers = await getCustomers('/orderById/asc');
-    showCustomers(customers);
+    await showCustomers(customers);
     addHeadersListeners();
-    addDeleteButtonListeners('клиента','customers');
+   await addDeleteButtonListeners('клиента','customers');
 
     createCustomerModal();
     addCustomerModalListener();

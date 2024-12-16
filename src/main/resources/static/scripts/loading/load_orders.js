@@ -32,15 +32,18 @@ let sortOrders = {
     statusId: '/asc'
 };
 
-function showOrders(orders) {
+async function showOrders(orders) {
     const ordersTable = document.getElementById('orders-table');
+    let access = await checkRoleForDelete();
+
     ordersTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="order-id-header" class="header">ID</th>' +
         '<th id="order-date-header" class="header">Дата заказа</th>' +
         '<th id="order-store-header" class="header">ID Магазина</th>' +
         '<th id="order-status-header" class="header">ID Статуса</th>' +
-        '<th>Удаление</th>'+
+        (access ? '<th>Удаление</th>' : '') +
         '</tr></thead>';
+
     let tbody = document.createElement('tbody');
     orders.forEach(order => {
         tbody.innerHTML += `<tr>
@@ -48,11 +51,11 @@ function showOrders(orders) {
 <td>${order.orderDate}</td>
 <td>${order.storeId}</td>
 <td>${order.statusId}</td>
-<td>
+${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${order.orderId}">
 Удалить
 </button>
-</td>
+</td>` : ''}
 </tr>`;
     });
     ordersTable.appendChild(tbody);
@@ -61,7 +64,7 @@ function showOrders(orders) {
 
 async function showSortedOrders(orderBy) {
     orders = await getOrders(orderBy);
-    showOrders(orders);
+    await showOrders(orders);
     addHeadersListeners();
 }
 
@@ -269,7 +272,7 @@ function addOrderModalListener() {
                 addedOrder.statusId
             ));
 
-            showOrders(orders);
+            await showOrders(orders);
             addHeadersListeners();
 
             hideOrderModal();
@@ -295,9 +298,9 @@ function addOrderButton() {
 let orders = null;
 (async () => {
     orders = await getOrders('/orderById/asc');
-    showOrders(orders);
+   await showOrders(orders);
     addHeadersListeners();
-    addDeleteButtonListeners('заказ', 'orders');
+   await addDeleteButtonListeners('заказ', 'orders');
 
     createOrderModal();
     addOrderModalListener();

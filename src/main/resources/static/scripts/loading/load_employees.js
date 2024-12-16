@@ -37,8 +37,9 @@ let sortEmployees = {
     position: '/asc',
 };
 
-function showEmployees(employees) {
+async function showEmployees(employees) {
     const employeesTable = document.getElementById('employees-table');
+    let access = await checkRoleForDelete();
     employeesTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="employee-id-header" class="header">ID</th>' +
         '<th id="employee-name-header" class="header">Имя</th>' +
@@ -46,7 +47,8 @@ function showEmployees(employees) {
         '<th id="employee-storeId-header" class="header">ID Магазина</th>' +
         '<th id="employee-position-header" class="header">Должность</th>' +
         '<th id="employee-email-header" class="header">Почта</th>' +
-        '<th>Удаление</th></tr></thead>';
+        (access ? '<th>Удаление</th>' : '') + // Условно добавляем заголовок столбца
+        '</tr></thead>';
     let tbody = document.createElement('tbody');
     employees.forEach(employee => {
         tbody.innerHTML += `<tr>
@@ -56,11 +58,11 @@ function showEmployees(employees) {
 <td>${employee.storeId}</td>
 <td>${employee.position}</td>
 <td>${employee.email}</td>
-<td>
+${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${employee.employeeId}">
 Удалить
 </button>
-</td>
+</td>` : ''} 
 </tr>`;
     });
     employeesTable.appendChild(tbody);
@@ -69,7 +71,7 @@ function showEmployees(employees) {
 
 async function showSortedEmployees(orderBy) {
     employees = await getEmployees(orderBy);
-    showEmployees(employees);
+    await showEmployees(employees);
     addHeadersListeners();
 }
 
@@ -337,9 +339,9 @@ function addEmployeeButton() {
 let employees = null;
 (async () => {
     employees = await getEmployees('/orderById/asc');
-    showEmployees(employees);
+    await showEmployees(employees);
     addHeadersListeners();
-    addDeleteButtonListeners('сотрудника', 'employees');
+    await addDeleteButtonListeners('сотрудника', 'employees');
 
     createEmployeeModal();
     addEmployeeModalListener();

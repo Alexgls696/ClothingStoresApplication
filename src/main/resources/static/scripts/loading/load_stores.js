@@ -30,7 +30,7 @@ let sortStores = {
 
 async function showSortedStores(orderBy) {
     stores = await getStores(orderBy);
-    showStores(stores);
+    await showStores(stores);
     addHeadersListeners();
 }
 
@@ -49,29 +49,33 @@ function addHeadersListeners() {
     });
 }
 
-function showStores(stores) {
+async function showStores(stores) {
     const storesTable = document.getElementById('stores-table');
+    let access = await checkRoleForDelete();
+
     storesTable.innerHTML = `
         <thead class="table-dark">
             <tr>
                 <th id="stores-id-header" class="header">ID</th>
                 <th id="stores-location-header" class="header">Местоположение</th>
-                <th>Удаление</th>
+                ${access ? '<th>Удаление</th>' : ''}
             </tr>
         </thead>`;
+
     let tbody = document.createElement('tbody');
     stores.forEach(store => {
         tbody.innerHTML += `
             <tr>
                 <td>${store.storeId}</td>
                 <td>${store.location}</td>
-                 <td>
+                ${access ? `<td>
                 <button class="btn btn-danger btn-sm delete-button" data-id="${store.storeId}">
                     Удалить
                 </button>
-            </td>
+                </td>` : ''}
             </tr>`;
     });
+
     storesTable.appendChild(tbody);
     addRowClickListeners();
 }
@@ -233,7 +237,7 @@ function addStoreModalListener() {
             const addedStore = await response.json();
             stores.push(new Store(addedStore.storeId, addedStore.location));
 
-            showStores(stores);
+            await showStores(stores);
             addHeadersListeners();
 
             hideStoreModal();
@@ -259,9 +263,9 @@ function addStoreButton() {
 let stores = null;
 (async () => {
     stores = await getStores('/orderById/asc');
-    showStores(stores);
+    await showStores(stores);
     addHeadersListeners();
-    addDeleteButtonListeners('магазин','stores');
+    await addDeleteButtonListeners('магазин','stores');
 
     createStoreModal();
     addStoreModalListener();

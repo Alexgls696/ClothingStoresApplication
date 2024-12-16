@@ -30,7 +30,7 @@ let sortSuppliers = {
 
 async function showSortedSuppliers(orderBy) {
     suppliers = await getSuppliers(orderBy);
-    showSuppliers(suppliers);
+    await showSuppliers(suppliers);
     addHeadersListeners();
 }
 
@@ -49,29 +49,33 @@ function addHeadersListeners() {
     });
 }
 
-function showSuppliers(suppliers) {
+async function showSuppliers(suppliers) {
     const suppliersTable = document.getElementById('suppliers-table');
+    let access = await checkRoleForDelete();
+
     suppliersTable.innerHTML = `
         <thead class="table-dark">
             <tr>
                 <th id="supplier-id-header" class="header">ID</th>
                 <th id="supplier-name-header" class="header">Название</th>
-                <th>Удаление</th>
+                ${access ? '<th>Удаление</th>' : ''}
             </tr>
         </thead>`;
+
     let tbody = document.createElement('tbody');
     suppliers.forEach(supplier => {
         tbody.innerHTML += `
             <tr>
                 <td>${supplier.supplierId}</td>
                 <td>${supplier.supplierName}</td>
-                <td>
+                ${access ? `<td>
                  <button class="btn btn-danger btn-sm delete-button" data-id="${supplier.supplierId}">
                     Удалить
                 </button>
-                </td>
+                </td>` : ''}
             </tr>`;
     });
+
     suppliersTable.appendChild(tbody);
     addRowClickListeners();
 }
@@ -238,7 +242,7 @@ function addSupplierModalListener() {
             const addedSupplier = await response.json();
             suppliers.push(new Supplier(addedSupplier.supplierId, addedSupplier.supplierName));
 
-            showSuppliers(suppliers);
+            await showSuppliers(suppliers);
             addHeadersListeners();
 
             hideSupplierModal();
@@ -264,9 +268,9 @@ function addSupplierButton() {
 let suppliers = null;
 (async () => {
     suppliers = await getSuppliers('/orderById/asc');
-    showSuppliers(suppliers);
+    await showSuppliers(suppliers);
     addHeadersListeners();
-    addDeleteButtonListeners('производителя','suppliers');
+    await addDeleteButtonListeners('производителя','suppliers');
 
     createSupplierModal();
     addSupplierModalListener();

@@ -28,32 +28,36 @@ let sortOrderStatuses = {
     statusName: '/asc',
 };
 
-function showOrderStatuses(orderStatuses) {
+async function showOrderStatuses(orderStatuses) {
     const orderStatusesTable = document.getElementById('order-statuses-table');
+    let access = await checkRoleForDelete();
+
     orderStatusesTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="order-status-id-header" class="header">ID</th>' +
         '<th id="order-status-status-name-header" class="header">Статус</th>' +
-        '<th>Удаление</th>'+
+        (access ? '<th>Удаление</th>' : '') +
         '</tr></thead>';
+
     let tbody = document.createElement('tbody');
     orderStatuses.forEach(orderStatus => {
         tbody.innerHTML += `<tr>
 <td>${orderStatus.statusId}</td>
 <td>${orderStatus.statusName}</td>
-<td>
+${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${orderStatus.statusId}">
 Удалить
 </button>
-</td>
+</td>` : ''}
 </tr>`;
     });
+
     orderStatusesTable.appendChild(tbody);
     addRowClickListeners();
 }
 
 async function showSortedOrderStatuses(orderBy) {
     orderStatuses = await getOrderStatuses(orderBy);
-    showOrderStatuses(orderStatuses);
+    await showOrderStatuses(orderStatuses);
     addHeadersListeners();
 }
 
@@ -233,7 +237,7 @@ function addOrderStatusModalListener() {
                 addedOrderStatus.statusName
             ));
 
-            showOrderStatuses(orderStatuses);
+            await showOrderStatuses(orderStatuses);
             addHeadersListeners();
 
             hideOrderStatusModal();
@@ -259,9 +263,9 @@ function addOrderStatusButton() {
 let orderStatuses = null;
 (async () => {
     orderStatuses = await getOrderStatuses('/orderById/asc');
-    showOrderStatuses(orderStatuses);
+    await showOrderStatuses(orderStatuses);
     addHeadersListeners();
-    addDeleteButtonListeners('статус заказа', 'orderStatuses');
+    await addDeleteButtonListeners('статус заказа', 'orderStatuses');
 
     createOrderStatusModal();
     addOrderStatusModalListener();
