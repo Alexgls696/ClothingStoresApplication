@@ -1,13 +1,16 @@
 
 package org.example.clothingstoresapplication.database_configuration;
 
+import jakarta.persistence.EntityManagerFactory;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -43,6 +46,8 @@ public class DynamicDatabaseConfig {
         return dynamicDataSource;
     }
 
+
+
     public void addDataSource(String key, DatabaseCredentials credentials) throws SQLException {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
@@ -73,10 +78,12 @@ public class DynamicDatabaseConfig {
 
         JpaTransactionManager transactionManager = context.getBean(JpaTransactionManager.class);
         transactionManager.setEntityManagerFactory(sessionFactoryBean.getObject());
+        transactionManager.setDataSource((DataSource) dataSources.get(key));
+        transactionManager.afterPropertiesSet();
     }
 
     @Bean
-    @Primary
+    @Scope("prototype")
     public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean sessionFactory) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(sessionFactory.getObject());
@@ -99,4 +106,6 @@ public class DynamicDatabaseConfig {
 
         return sessionFactoryBean;
     }
+
+
 }

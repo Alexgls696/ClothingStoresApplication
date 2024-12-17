@@ -1,5 +1,6 @@
 package org.example.clothingstoresapplication.controller;
 
+import jakarta.persistence.EntityManagerFactory;
 import org.example.clothingstoresapplication.database_configuration.DatabaseCredentials;
 import org.example.clothingstoresapplication.database_configuration.DynamicDataSource;
 import org.example.clothingstoresapplication.database_configuration.DynamicDatabaseConfig;
@@ -32,6 +33,10 @@ public class DatabaseController {
     public DatabaseController(DynamicDatabaseConfig dynamicDatabaseConfig){
         this.dynamicDatabaseConfig = dynamicDatabaseConfig;
     }
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
+
     @PostMapping("/connect")
     public String connect(@ModelAttribute("credentials") DatabaseCredentials credentials, Model model) {
         try {
