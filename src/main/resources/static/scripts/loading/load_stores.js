@@ -147,7 +147,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Изменения успешно сохранены');
         } catch (error) {
@@ -235,7 +237,9 @@ function addStoreModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении магазина: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
 
             const addedStore = await response.json();
@@ -243,7 +247,7 @@ function addStoreModalListener() {
 
             await showStores(stores);
             addHeadersListeners();
-
+            await addDeleteButtonListener('stores',location);
             hideStoreModal();
             document.getElementById('addStoreForm').reset();
         } catch (error) {

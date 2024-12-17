@@ -199,7 +199,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Изменения успешно сохранены');
         } catch (error) {
@@ -311,7 +313,10 @@ function addProductModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении продукта: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedProduct = await response.json();
@@ -326,7 +331,7 @@ function addProductModalListener() {
 
             await showProducts(products);
             addHeadersListeners();
-
+            await addDeleteButtonListener('products',productName);
             hideProductModal();
             document.getElementById('addProductForm').reset();
         } catch (error) {

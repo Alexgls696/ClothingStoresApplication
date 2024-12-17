@@ -147,7 +147,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Изменения успешно сохранены');
         } catch (error) {
@@ -240,7 +242,10 @@ function addSupplierModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении поставщика: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedSupplier = await response.json();
@@ -248,7 +253,7 @@ function addSupplierModalListener() {
 
             await showSuppliers(suppliers);
             addHeadersListeners();
-
+            await addDeleteButtonListener('suppliers',supplierName);
             hideSupplierModal();
             document.getElementById('addSupplierForm').reset();
         } catch (error) {

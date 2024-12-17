@@ -187,7 +187,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Изменения успешно сохранены');
         } catch (error) {
@@ -304,7 +306,10 @@ function addEmployeeModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении сотрудника: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedEmployee = await response.json();
@@ -317,9 +322,9 @@ function addEmployeeModalListener() {
                 addedEmployee.email
             ));
 
-            showEmployees(employees);
+            await showEmployees(employees);
             addHeadersListeners();
-
+            await addDeleteButtonListener('employees',firstName+" "+lastName);
             hideEmployeeModal(); // Закрытие модального окна
             document.getElementById('addEmployeeForm').reset(); // Очистка формы
         } catch (error) {

@@ -35,7 +35,7 @@ async function deleteAllEntities(apiPath) {
 
 async function addDeleteAllButton(apiPath) {
     let access = await checkRoleForDelete();
-    if(!access){
+    if (!access) {
         return;
     }
     const deleteAllButton = document.createElement('button');
@@ -47,7 +47,7 @@ async function addDeleteAllButton(apiPath) {
 }
 
 //------------------------Удаление по id-----------------------------------------------------------------------
-async function deleteById(table,id) {
+async function deleteById(table, id) {
     try {
         const response = await fetch(`http://${ip}/api/${table}/${id}`, {
             method: 'DELETE',
@@ -70,9 +70,25 @@ async function deleteById(table,id) {
     }
 }
 
-async function addDeleteButtonListeners(name,table) {
+async function addDeleteButtonListener(table, name) {
     let access = await checkRoleForDelete();
-    if(!access){
+    if (!access) {
+        return;
+    }
+    const deleteButtons = document.querySelectorAll('.delete-button');
+    let button = deleteButtons[deleteButtons.length-1];
+    button.addEventListener('click', async (event) => {
+        const id = event.target.getAttribute('data-id');
+        if (confirm(`Вы уверены, что хотите удалить ${name} с ID ${id}?`)) {
+            console.log(table,id)
+            await deleteById(table, id);
+        }
+    });
+}
+
+async function addDeleteButtonListeners(name, table) {
+    let access = await checkRoleForDelete();
+    if (!access) {
         return;
     }
     const deleteButtons = document.querySelectorAll('.delete-button');
@@ -80,14 +96,13 @@ async function addDeleteButtonListeners(name,table) {
         button.addEventListener('click', async (event) => {
             const id = event.target.getAttribute('data-id');
             if (confirm(`Вы уверены, что хотите удалить ${name} с ID ${id}?`)) {
-                await deleteById(table,id);
+                await deleteById(table, id);
             }
         });
     });
 }
 
 function showError(message) {
-    // Устанавливаем текст сообщения об ошибке
     document.getElementById('errorMessage').innerText = message;
     let toast = new bootstrap.Toast(document.getElementById('errorToast'));
     toast.show();

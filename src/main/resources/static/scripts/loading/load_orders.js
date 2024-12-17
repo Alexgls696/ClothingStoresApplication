@@ -168,7 +168,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Изменения успешно сохранены');
         } catch (error) {
@@ -270,7 +272,10 @@ function addOrderModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении заказа: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedOrder = await response.json();
@@ -283,7 +288,7 @@ function addOrderModalListener() {
 
             await showOrders(orders);
             addHeadersListeners();
-
+            await addDeleteButtonListener('orders','заказ');
             hideOrderModal();
             document.getElementById('addOrderForm').reset();
         } catch (error) {

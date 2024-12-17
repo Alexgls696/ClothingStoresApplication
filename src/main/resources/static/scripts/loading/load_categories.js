@@ -152,7 +152,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Данные успешно сохранены');
         } catch (error) {
@@ -251,6 +253,7 @@ function addCategoryModalListener() {
             categories.push(new Category(addedCategory.categoryId, addedCategory.categoryName));
             await showCategories(categories);
             addHeadersListeners();
+            await addDeleteButtonListener('categories',categoryName);
 
             hideModal(); // Закрытие модального окна
             document.getElementById('addCategoryForm').reset(); // Очистка формы

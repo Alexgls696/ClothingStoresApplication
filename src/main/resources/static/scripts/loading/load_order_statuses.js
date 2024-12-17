@@ -147,7 +147,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Изменения успешно сохранены');
         } catch (error) {
@@ -236,7 +238,10 @@ function addOrderStatusModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении статуса заказа: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedOrderStatus = await response.json();
@@ -247,7 +252,7 @@ function addOrderStatusModalListener() {
 
             await showOrderStatuses(orderStatuses);
             addHeadersListeners();
-
+            await addDeleteButtonListener('orderStatuses',statusName);
             hideOrderStatusModal();
             document.getElementById('addOrderStatusForm').reset();
         } catch (error) {

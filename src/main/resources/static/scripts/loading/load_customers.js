@@ -11,7 +11,7 @@ class Customer {
 
 const ip = location.host;
 
-async function getCustomers(findBy,findValue,sortBy,sortType) {
+async function getCustomers(findBy, findValue, sortBy, sortType) {
     try {
         const response = await fetch(`http://${ip}/api/customers/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
@@ -87,8 +87,8 @@ const FIND_BY = 'id';
 let findBy = 'id';
 let findValue = 0;
 
-async function showSortedCustomers(sortBy,sortType) {
-    customers = await getCustomers(findBy,findValue,sortBy,sortType);
+async function showSortedCustomers(sortBy, sortType) {
+    customers = await getCustomers(findBy, findValue, sortBy, sortType);
     await showCustomers(customers);
     addHeadersListeners();
 }
@@ -103,27 +103,27 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortCustomers.id = sortCustomers.id === 'asc' ? 'desc' : 'asc';
-        await showSortedCustomers('customerId' , sortCustomers.id);
+        await showSortedCustomers('customerId', sortCustomers.id);
     });
 
     firstName.addEventListener('click', async () => {
         sortCustomers.name = sortCustomers.name === 'asc' ? 'desc' : 'asc';
-        await showSortedCustomers('firstName',  sortCustomers.name);
+        await showSortedCustomers('firstName', sortCustomers.name);
     });
 
     lastName.addEventListener('click', async () => {
         sortCustomers.surname = sortCustomers.surname === 'asc' ? 'desc' : 'asc';
-        await showSortedCustomers('lastName' , sortCustomers.surname);
+        await showSortedCustomers('lastName', sortCustomers.surname);
     });
 
     email.addEventListener('click', async () => {
         sortCustomers.email = sortCustomers.email === 'asc' ? 'desc' : 'asc';
-        await showSortedCustomers('email' , sortCustomers.email);
+        await showSortedCustomers('email', sortCustomers.email);
     });
 
     phoneNumber.addEventListener('click', async () => {
         sortCustomers.phoneNumber = sortCustomers.phoneNumber === 'asc' ? 'desc' : 'asc';
-        await showSortedCustomers('phoneNumber'  ,sortCustomers.phoneNumber);
+        await showSortedCustomers('phoneNumber', sortCustomers.phoneNumber);
     });
 
     orderId.addEventListener('click', async () => {
@@ -181,7 +181,7 @@ function collectEditedData() {
         const email = row.children[3].querySelector('input').value.trim();
         const phoneNumber = row.children[4].querySelector('input').value.trim();
         const orderId = row.children[5].querySelector('input').value.trim();
-        editedData.push({ customerId: id, firstName, lastName, email, phoneNumber, orderId });
+        editedData.push({customerId: id, firstName, lastName, email, phoneNumber, orderId});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -199,6 +199,10 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
+                let data = await response.json()
+                showError(data.message)
+                return
+
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             console.log('Изменения успешно сохранены');
@@ -314,7 +318,10 @@ function addCustomerModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении клиента: ${response.status}`);
+                let data = await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedCustomer = await response.json();
@@ -329,7 +336,7 @@ function addCustomerModalListener() {
 
             await showCustomers(customers);
             addHeadersListeners();
-
+            await addDeleteButtonListener('customers',firstName+' '+lastName);
             hideCustomerModal(); // Закрытие модального окна
             document.getElementById('addCustomerForm').reset(); // Очистка формы
         } catch (error) {
@@ -356,10 +363,10 @@ function addCustomerButton() {
 
 let customers = null;
 (async () => {
-    customers = await getCustomers('id','0','customerId','asc');
+    customers = await getCustomers('id', '0', 'customerId', 'asc');
     await showCustomers(customers);
     addHeadersListeners();
-   await addDeleteButtonListeners('клиента','customers');
+    await addDeleteButtonListeners('клиента', 'customers');
 
     createCustomerModal();
     addCustomerModalListener();

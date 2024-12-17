@@ -144,7 +144,9 @@ async function saveEditedData() {
                 body: JSON.stringify(editedData),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                return
             }
             console.log('Изменения успешно сохранены');
         } catch (error) {
@@ -233,7 +235,10 @@ function addProductTypeModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении типа продукта: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedProductType = await response.json();
@@ -244,7 +249,7 @@ function addProductTypeModalListener() {
 
             await showProductTypes(productTypes);
             addHeadersListeners();
-
+            await addDeleteButtonListener('productTypes',typeName);
             hideProductTypeModal();
             document.getElementById('addProductTypeForm').reset();
         } catch (error) {
