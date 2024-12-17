@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orderProducts")
@@ -79,4 +80,23 @@ public class OrderProductsController {
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"count");
         return orderProductRepository.findAllOrderByCount(pageable(sort));
     }
+
+    @GetMapping("/findBy")
+    public Iterable<OrderProduct> getOrderProductsBy(@RequestParam Map<String, String> parameters) {
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+        return switch (findBy) {
+            case "orderProductId" -> orderProductRepository.findAll(pageable(sort));
+            case "productId" -> orderProductRepository.findAllByProductId(Integer.parseInt(findValue), pageable(sort));
+            case "orderId" -> orderProductRepository.findAllByOrderId(Integer.parseInt(findValue), pageable(sort));
+            case "count" -> orderProductRepository.findAllByCount(Integer.parseInt(findValue), pageable(sort));
+            default -> throw new IllegalStateException("Unexpected value: " + findBy);
+        };
+    }
+
 }

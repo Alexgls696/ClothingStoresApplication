@@ -11,9 +11,9 @@ class Product {
 
 const ip = location.host;
 
-async function getProducts(orderBy) {
+async function getProducts(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/products${orderBy}`);
+        const response = await fetch(`http://${ip}/api/products/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -35,16 +35,21 @@ async function getProducts(orderBy) {
 }
 
 let sortProducts = {
-    id: '/asc',
-    productName: '/asc',
-    price: '/asc',
-    categoryId: '/asc',
-    typeId: '/asc',
-    supplierId: '/asc'
+    id: 'asc',
+    productName: 'asc',
+    price: 'asc',
+    categoryId: 'asc',
+    typeId: 'asc',
+    supplierId: 'asc'
 };
 
-async function showSortedProducts(orderBy) {
-    products = await getProducts(orderBy);
+
+const FIND_BY = 'productId';
+let findBy = 'productId';
+let findValue = 0;
+
+async function showSortedProducts(sortBy,sortType) {
+    products = await getProducts(findBy,findValue,sortBy,sortType)
     await showProducts(products);
     addHeadersListeners();
 }
@@ -58,33 +63,33 @@ function addHeadersListeners() {
     const supplierId = document.getElementById('product-supplierId-header');
 
     id.addEventListener('click', async () => {
-        sortProducts.id = sortProducts.id === '/asc' ? '/desc' : '/asc';
-        await showSortedProducts('/orderById' + sortProducts.id);
+        sortProducts.id = sortProducts.id === 'asc' ? 'desc' : 'asc';
+        await showSortedProducts('productId',  sortProducts.id);
     });
 
     productName.addEventListener('click', async () => {
-        sortProducts.productName = sortProducts.productName === '/asc' ? '/desc' : '/asc';
-        await showSortedProducts('/orderByProductName' + sortProducts.productName);
+        sortProducts.productName = sortProducts.productName === 'asc' ? 'desc' : 'asc';
+        await showSortedProducts('productName' , sortProducts.productName);
     });
 
     price.addEventListener('click', async () => {
-        sortProducts.price = sortProducts.price === '/asc' ? '/desc' : '/asc';
-        await showSortedProducts('/orderByPrice' + sortProducts.price);
+        sortProducts.price = sortProducts.price === 'asc' ? 'desc' : 'asc';
+        await showSortedProducts('price' , sortProducts.price);
     });
 
     categoryId.addEventListener('click', async () => {
-        sortProducts.categoryId = sortProducts.categoryId === '/asc' ? '/desc' : '/asc';
-        await showSortedProducts('/orderByCategoryId' + sortProducts.categoryId);
+        sortProducts.categoryId = sortProducts.categoryId === 'asc' ? 'desc' : 'asc';
+        await showSortedProducts('categoryId',  sortProducts.categoryId);
     });
 
     typeId.addEventListener('click', async () => {
-        sortProducts.typeId = sortProducts.typeId === '/asc' ? '/desc' : '/asc';
-        await showSortedProducts('/orderByTypeId' + sortProducts.typeId);
+        sortProducts.typeId = sortProducts.typeId === 'asc' ? 'desc' : 'asc';
+        await showSortedProducts('typeId' , sortProducts.typeId);
     });
 
     supplierId.addEventListener('click', async () => {
         sortProducts.supplierId = sortProducts.supplierId === '/asc' ? '/desc' : '/asc';
-        await showSortedProducts('/orderBySupplierId' + sortProducts.supplierId);
+        await showSortedProducts('supplierId' , sortProducts.supplierId);
     });
 }
 
@@ -344,7 +349,7 @@ function addProductButton() {
 
 let products = null;
 (async () => {
-    products = await getProducts('/orderById/asc');
+    products = await getProducts(findBy,'0','productId','asc');
     await showProducts(products);
     addHeadersListeners();
     await addDeleteButtonListeners('товар', 'products');

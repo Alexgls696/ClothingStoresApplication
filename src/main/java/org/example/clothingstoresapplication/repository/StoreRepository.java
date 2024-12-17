@@ -18,4 +18,7 @@ public interface StoreRepository extends CrudRepository<Store, Integer> {
 
     @Query(value = "from Store ")
     Page<Store> findAllOrderByLocation(Pageable pageable);
+
+    Page<Store>findAllByStoreId(Integer storeId, Pageable pageable);
+    Page<Store>findAllByLocationLikeIgnoreCase( String location, Pageable pageable);
 }

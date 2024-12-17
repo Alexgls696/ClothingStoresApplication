@@ -26,4 +26,8 @@ public interface OrderRepository extends CrudRepository<Order, Integer> {
     @Query(value = "from Order ")
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
+    Page<Order> findAllByOrderId(Integer orderId, Pageable pageable);
+    Page<Order> findAllByStoreId(Integer storeId, Pageable pageable);
+    Page<Order> findAllByStatusId(Integer statusId, Pageable pageable);
+
 }

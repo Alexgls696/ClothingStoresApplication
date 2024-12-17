@@ -11,9 +11,9 @@ class Employee {
 
 const ip = location.host;
 
-async function getEmployees(orderBy) {
+async function getEmployees(findBy, findValue, sortBy, sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/employees${orderBy}`);
+        const response = await fetch(`http://${ip}/api/employees/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -29,12 +29,12 @@ async function getEmployees(orderBy) {
 }
 
 let sortEmployees = {
-    id: '/asc',
-    name: '/asc',
-    surname: '/asc',
-    email: '/asc',
-    storeId: '/asc',
-    position: '/asc',
+    id: 'asc',
+    name: 'asc',
+    surname: 'asc',
+    email: 'asc',
+    storeId: 'asc',
+    position: 'asc'
 };
 
 async function showEmployees(employees) {
@@ -69,8 +69,14 @@ ${access ? `<td>
     addRowClickListeners();
 }
 
-async function showSortedEmployees(orderBy) {
-    employees = await getEmployees(orderBy);
+
+const FIND_BY = 'employeeId';
+
+let findBy = 'employeeId';
+let findValue = 0;
+
+async function showSortedEmployees(sortBy,sortType) {
+    employees = await getEmployees(findBy,findValue,sortBy,sortType);
     await showEmployees(employees);
     addHeadersListeners();
 }
@@ -84,33 +90,33 @@ function addHeadersListeners() {
     const position = document.getElementById('employee-position-header');
 
     id.addEventListener('click', async () => {
-        sortEmployees.id = sortEmployees.id === '/asc' ? '/desc' : '/asc';
-        await showSortedEmployees('/orderById' + sortEmployees.id);
+        sortEmployees.id = sortEmployees.id === 'asc' ? 'desc' : 'asc';
+        await showSortedEmployees('employeeId', sortEmployees.id);
     });
 
     firstName.addEventListener('click', async () => {
-        sortEmployees.name = sortEmployees.name === '/asc' ? '/desc' : '/asc';
-        await showSortedEmployees('/orderByFirstName' + sortEmployees.name);
+        sortEmployees.name = sortEmployees.name === 'asc' ? 'desc' : 'asc';
+        await showSortedEmployees('firstName', sortEmployees.name);
     });
 
     lastName.addEventListener('click', async () => {
-        sortEmployees.surname = sortEmployees.surname === '/asc' ? '/desc' : '/asc';
-        await showSortedEmployees('/orderByLastName' + sortEmployees.surname);
+        sortEmployees.surname = sortEmployees.surname === 'asc' ? 'desc' : 'asc';
+        await showSortedEmployees('lastName', sortEmployees.surname);
     });
 
     email.addEventListener('click', async () => {
-        sortEmployees.email = sortEmployees.email === '/asc' ? '/desc' : '/asc';
-        await showSortedEmployees('/orderByEmail' + sortEmployees.email);
+        sortEmployees.email = sortEmployees.email === 'asc' ? 'desc' : 'asc';
+        await showSortedEmployees('email', sortEmployees.email);
     });
 
     storeId.addEventListener('click', async () => {
-        sortEmployees.storeId = sortEmployees.storeId === '/asc' ? '/desc' : '/asc';
-        await showSortedEmployees('/orderByStoreId' + sortEmployees.storeId);
+        sortEmployees.storeId = sortEmployees.storeId === 'asc' ? 'desc' : 'asc';
+        await showSortedEmployees('storeId', sortEmployees.storeId);
     });
 
     position.addEventListener('click', async () => {
-        sortEmployees.position = sortEmployees.position === '/asc' ? '/desc' : '/asc';
-        await showSortedEmployees('/orderByPosition' + sortEmployees.position);
+        sortEmployees.position = sortEmployees.position === 'asc' ? 'desc' : 'asc';
+        await showSortedEmployees('position', sortEmployees.position);
     });
 }
 
@@ -338,7 +344,7 @@ function addEmployeeButton() {
 
 let employees = null;
 (async () => {
-    employees = await getEmployees('/orderById/asc');
+    employees = await getEmployees('employeeId', '0', 'employeeId', 'asc');
     await showEmployees(employees);
     addHeadersListeners();
     await addDeleteButtonListeners('сотрудника', 'employees');

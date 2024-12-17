@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/stores")
@@ -64,5 +65,21 @@ public class StoreController {
     public Iterable<Store> getCategoriesByLocation(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"location");
         return storeRepository.findAllOrderByLocation(pageable(sort));
+    }
+
+    @GetMapping("/findBy")
+    public Iterable<Store> getStoresBy(@RequestParam Map<String, String> parameters) {
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+        return switch (findBy) {
+            case "storeId" -> storeRepository.findAll(pageable(sort));
+            case "location" -> storeRepository.findAllByLocationLikeIgnoreCase("%"+findValue+"%", pageable(sort));
+            default -> throw new IllegalStateException("Unexpected value: " + findBy);
+        };
     }
 }

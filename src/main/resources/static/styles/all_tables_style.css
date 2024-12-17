@@ -11,3 +11,10 @@
     column-gap: 1vw;
     margin-right: 1vw;
 }
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Убедитесь, что оно поверх других элементов */
+}

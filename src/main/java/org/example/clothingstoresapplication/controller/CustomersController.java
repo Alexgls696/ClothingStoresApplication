@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -89,5 +90,24 @@ public class CustomersController {
     public Iterable<Customer> getCustomersByOrderId(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"orderId");
         return customersRepository.findAllOrderByIdOrderId(pageable(sort));
+    }
+
+    @GetMapping("/findBy")
+    public Iterable<Customer> getCustomersBy(@RequestParam Map<String,String> parameters){
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,sortBy);
+        return switch (findBy){
+            case "id" -> customersRepository.findAll(pageable(sort));
+            case "firstName" -> customersRepository.findAllByFirstNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "lastName" -> customersRepository.findAllByLastNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "email" -> customersRepository.findAllByEmailLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "phoneNumber" -> customersRepository.findAllByPhoneNumberLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "orderId" -> customersRepository.findAllByOrderId(Integer.parseInt(findValue), pageable(sort));
+            default -> throw new IllegalStateException("Unexpected value: " + findBy);
+        };
     }
 }

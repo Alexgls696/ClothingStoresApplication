@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orderStatuses")
@@ -64,5 +65,21 @@ public class OrderStatusesController {
     public Iterable<OrderStatus> getCategoriesByName(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"statusName");
         return orderStatusRepository.findAllOrderByName(pageable(sort));
+    }
+
+    @GetMapping("/findBy")
+    public Iterable<OrderStatus> getOrderStatusesBy(@RequestParam Map<String, String> parameters) {
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+        return switch (findBy) {
+            case "statusId" -> orderStatusRepository.findAll(pageable(sort));
+            case "statusName" -> orderStatusRepository.findAllByStatusNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            default -> throw new IllegalStateException("Unexpected value: " + findBy);
+        };
     }
 }

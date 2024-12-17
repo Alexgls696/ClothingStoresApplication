@@ -7,9 +7,9 @@ class Supplier {
 
 const ip = location.host;
 
-async function getSuppliers(orderBy) {
+async function getSuppliers(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/suppliers${orderBy}`);
+        const response = await fetch(`http://${ip}/api/suppliers/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -24,12 +24,16 @@ async function getSuppliers(orderBy) {
 }
 
 let sortSuppliers = {
-    id: '/asc',
-    name: '/asc',
+    id: 'asc',
+    name: 'asc',
 };
 
-async function showSortedSuppliers(orderBy) {
-    suppliers = await getSuppliers(orderBy);
+const FIND_BY = 'supplierId';
+let findBy = 'supplierId';
+let findValue = 0;
+
+async function showSortedSuppliers(sortBy,sortType) {
+    suppliers = await getSuppliers(findBy,findValue,sortBy,sortType);
     await showSuppliers(suppliers);
     addHeadersListeners();
 }
@@ -39,13 +43,13 @@ function addHeadersListeners() {
     const name = document.getElementById('supplier-name-header');
 
     id.addEventListener('click', async () => {
-        sortSuppliers.id = sortSuppliers.id === '/asc' ? '/desc' : '/asc';
-        await showSortedSuppliers('/orderById' + sortSuppliers.id);
+        sortSuppliers.id = sortSuppliers.id === 'asc' ? 'desc' : 'asc';
+        await showSortedSuppliers('supplierId',  sortSuppliers.id);
     });
 
     name.addEventListener('click', async () => {
-        sortSuppliers.name = sortSuppliers.name === '/asc' ? '/desc' : '/asc';
-        await showSortedSuppliers('/orderBySupplierName' + sortSuppliers.name);
+        sortSuppliers.name = sortSuppliers.name === 'asc' ? 'desc' : 'asc';
+        await showSortedSuppliers('supplierName' , sortSuppliers.name);
     });
 }
 
@@ -267,7 +271,7 @@ function addSupplierButton() {
 
 let suppliers = null;
 (async () => {
-    suppliers = await getSuppliers('/orderById/asc');
+    suppliers = await getSuppliers(findBy, '0', 'supplierId', 'asc');
     await showSuppliers(suppliers);
     addHeadersListeners();
     await addDeleteButtonListeners('производителя','suppliers');

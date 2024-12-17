@@ -9,4 +9,5 @@ import lombok.*;
 @ToString
 public class ExceptionData {
     private String message;
+    private boolean success = false;
 }

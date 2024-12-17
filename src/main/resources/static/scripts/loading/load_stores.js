@@ -7,9 +7,9 @@ class Store {
 
 const ip = location.host;
 
-async function getStores(orderBy) {
+async function getStores(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/stores${orderBy}`);
+        const response = await fetch(`http://${ip}/api/stores/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -24,12 +24,16 @@ async function getStores(orderBy) {
 }
 
 let sortStores = {
-    id: '/asc',
-    location: '/asc',
+    id: 'asc',
+    location: 'asc',
 };
 
-async function showSortedStores(orderBy) {
-    stores = await getStores(orderBy);
+const FIND_BY = 'storeId';
+let findBy = 'storeId';
+let findValue = 0;
+
+async function showSortedStores(sortBy,sortType) {
+    stores = await getStores(findBy,findValue,sortBy,sortType);
     await showStores(stores);
     addHeadersListeners();
 }
@@ -39,13 +43,13 @@ function addHeadersListeners() {
     const location = document.getElementById('stores-location-header');
 
     id.addEventListener('click', async () => {
-        sortStores.id = sortStores.id === '/asc' ? '/desc' : '/asc';
-        await showSortedStores('/orderById' + sortStores.id);
+        sortStores.id = sortStores.id === 'asc' ? 'desc' : 'asc';
+        await showSortedStores('storeId' , sortStores.id);
     });
 
     location.addEventListener('click', async () => {
-        sortStores.location = sortStores.location === '/asc' ? '/desc' : '/asc';
-        await showSortedStores('/orderByLocation' + sortStores.location);
+        sortStores.location = sortStores.location === 'asc' ? 'desc' : 'asc';
+        await showSortedStores('location' , sortStores.location);
     });
 }
 
@@ -262,7 +266,7 @@ function addStoreButton() {
 
 let stores = null;
 (async () => {
-    stores = await getStores('/orderById/asc');
+    stores = await getStores(findBy, '0', 'storeId', 'asc');
     await showStores(stores);
     addHeadersListeners();
     await addDeleteButtonListeners('магазин','stores');

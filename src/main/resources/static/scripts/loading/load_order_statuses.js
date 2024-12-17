@@ -7,9 +7,9 @@ class OrderStatus {
 
 const ip = location.host;
 
-async function getOrderStatuses(orderBy) {
+async function getOrderStatuses(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/orderStatuses${orderBy}`);
+        const response = await fetch(`http://${ip}/api/orderStatuses/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -23,10 +23,8 @@ async function getOrderStatuses(orderBy) {
     }
 }
 
-let sortOrderStatuses = {
-    id: '/asc',
-    statusName: '/asc',
-};
+
+
 
 async function showOrderStatuses(orderStatuses) {
     const orderStatusesTable = document.getElementById('order-statuses-table');
@@ -55,8 +53,18 @@ ${access ? `<td>
     addRowClickListeners();
 }
 
-async function showSortedOrderStatuses(orderBy) {
-    orderStatuses = await getOrderStatuses(orderBy);
+
+const FIND_BY = 'statusId';
+let findBy = 'statusId';
+let findValue = 0;
+
+let sortOrderStatuses = {
+    id: 'asc',
+    statusName: 'asc',
+};
+
+async function showSortedOrderStatuses(sortBy,sortType) {
+    orderStatuses = await getOrderStatuses(findBy,findValue,sortBy,sortType);
     await showOrderStatuses(orderStatuses);
     addHeadersListeners();
 }
@@ -66,13 +74,13 @@ function addHeadersListeners() {
     const statusName = document.getElementById('order-status-status-name-header');
 
     id.addEventListener('click', async () => {
-        sortOrderStatuses.id = sortOrderStatuses.id === '/asc' ? '/desc' : '/asc';
-        await showSortedOrderStatuses('/orderById' + sortOrderStatuses.id);
+        sortOrderStatuses.id = sortOrderStatuses.id === 'asc' ? 'desc' : 'asc';
+        await showSortedOrderStatuses('statusId'  ,sortOrderStatuses.id);
     });
 
     statusName.addEventListener('click', async () => {
-        sortOrderStatuses.statusName = sortOrderStatuses.statusName === '/asc' ? '/desc' : '/asc';
-        await showSortedOrderStatuses('/orderByStatusName' + sortOrderStatuses.statusName);
+        sortOrderStatuses.statusName = sortOrderStatuses.statusName === 'asc' ? 'desc' : 'asc';
+        await showSortedOrderStatuses('statusName'  ,sortOrderStatuses.statusName);
     });
 }
 
@@ -262,7 +270,7 @@ function addOrderStatusButton() {
 
 let orderStatuses = null;
 (async () => {
-    orderStatuses = await getOrderStatuses('/orderById/asc');
+    orderStatuses = await getOrderStatuses(findBy,'0','statusId','asc');
     await showOrderStatuses(orderStatuses);
     addHeadersListeners();
     await addDeleteButtonListeners('статус заказа', 'orderStatuses');

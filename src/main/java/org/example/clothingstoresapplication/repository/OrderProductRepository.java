@@ -8,6 +8,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 @Transactional
 public interface OrderProductRepository extends CrudRepository<OrderProduct, Integer> {
@@ -24,4 +26,9 @@ public interface OrderProductRepository extends CrudRepository<OrderProduct, Int
 
     @Query(value = "from OrderProduct ")
     Page<OrderProduct> findAllOrderByCount(Pageable pageable);
+
+    List<OrderProduct> findAllByOrderProductId(int id, Pageable pageable);
+    List<OrderProduct> findAllByOrderId(int id, Pageable pageable);
+    List<OrderProduct> findAllByProductId(int id, Pageable pageable);
+    List<OrderProduct> findAllByCount(int count, Pageable pageable);
 }

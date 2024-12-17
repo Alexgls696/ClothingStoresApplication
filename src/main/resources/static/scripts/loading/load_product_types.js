@@ -7,9 +7,9 @@ class ProductType {
 
 const ip = location.host;
 
-async function getProductTypes(orderBy) {
+async function getProductTypes(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/productTypes${orderBy}`);
+        const response = await fetch(`http://${ip}/api/productTypes/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -22,11 +22,6 @@ async function getProductTypes(orderBy) {
         console.log(error);
     }
 }
-
-let sortProductTypes = {
-    id: '/asc',
-    typeName: '/asc'
-};
 
 async function showProductTypes(productTypes) {
     const productTypesTable = document.getElementById('product-types-table');
@@ -54,8 +49,19 @@ ${access ? `<td>
     addRowClickListeners();
 }
 
-async function showSortedProductTypes(orderBy) {
-    productTypes = await getProductTypes(orderBy);
+
+
+let sortProductTypes = {
+    id: 'asc',
+    typeName: 'asc'
+};
+
+const FIND_BY = 'typeId';
+let findBy = 'typeId';
+let findValue = 0;
+
+async function showSortedProductTypes(sortBy,sortType) {
+    productTypes = await getProductTypes(findBy,findValue,sortBy,sortType);
     await showProductTypes(productTypes);
     addHeadersListeners();
 }
@@ -65,13 +71,13 @@ function addHeadersListeners() {
     const typeName = document.getElementById('product-type-type-name-header');
 
     id.addEventListener('click', async () => {
-        sortProductTypes.id = sortProductTypes.id === '/asc' ? '/desc' : '/asc';
-        await showSortedProductTypes('/orderById' + sortProductTypes.id);
+        sortProductTypes.id = sortProductTypes.id === 'asc' ? 'desc' : 'asc';
+        await showSortedProductTypes('typeId' , sortProductTypes.id);
     });
 
     typeName.addEventListener('click', async () => {
-        sortProductTypes.typeName = sortProductTypes.typeName === '/asc' ? '/desc' : '/asc';
-        await showSortedProductTypes('/orderByTypeName' + sortProductTypes.typeName);
+        sortProductTypes.typeName = sortProductTypes.typeName === 'asc' ? 'desc' : 'asc';
+        await showSortedProductTypes('typeName' , sortProductTypes.typeName);
     });
 }
 
@@ -261,7 +267,7 @@ function addProductTypeButton() {
 
 let productTypes = null;
 (async () => {
-    productTypes = await getProductTypes('/orderById/asc');
+    productTypes = await getProductTypes(findBy, '0', 'typeId', 'asc');
     await showProductTypes(productTypes);
     addHeadersListeners();
     await addDeleteButtonListeners('тип товара', 'productTypes');

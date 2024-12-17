@@ -35,4 +35,11 @@ public interface CustomersRepository extends CrudRepository<Customer, Integer>{
     @Query(value = "from Customer ")
     Page<Customer> findAllOrderByIdOrderId(Pageable pageable);
 
+    Page<Customer> findAllByCustomerId(int id, Pageable pageable);
+    Page<Customer> findAllByEmailLikeIgnoreCase(String email, Pageable pageable);
+    Page<Customer> findAllByPhoneNumberLikeIgnoreCase(String phoneNumber, Pageable pageable);
+    Page<Customer> findAllByFirstNameLikeIgnoreCase(String firstName, Pageable pageable);
+    Page<Customer> findAllByLastNameLikeIgnoreCase(String lastName, Pageable pageable);
+    Page<Customer> findAllByOrderId(int orderId, Pageable pageable);
+
 }

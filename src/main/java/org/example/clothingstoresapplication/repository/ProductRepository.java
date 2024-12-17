@@ -31,4 +31,10 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
     @Query(value = "from Product ")
     Page<Product> findAllOrderBySupplierId(Pageable pageable);
 
+    Page<Product>findAllByProductId(int productId, Pageable pageable);
+    Page<Product>findAllByCategoryId(int categoryId, Pageable pageable);
+    Page<Product>findAllByTypeId(int typeId, Pageable pageable);
+    Page<Product>findAllBySupplierId(int supplierId, Pageable pageable);
+    Page<Product>findAllByProductNameLikeIgnoreCase(String productName, Pageable pageable);
+    Page<Product>findAllByPrice(double price, Pageable pageable);
 }

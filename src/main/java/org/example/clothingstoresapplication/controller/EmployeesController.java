@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -93,4 +94,23 @@ public class EmployeesController {
         return employeeRepository.findAllOrderByEmail(pageable(sort));
     }
 
+    @GetMapping("/findBy")
+    public Iterable<Employee> getEmployeesBy(@RequestParam Map<String, String> parameters) {
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+        return switch (findBy) {
+            case "employeeId" -> employeeRepository.findAll(pageable(sort));
+            case "firstName" -> employeeRepository.findAllByFirstNameLikeIgnoreCase(findValue + "%", pageable(sort));
+            case "lastName" -> employeeRepository.findAllByLastNameLikeIgnoreCase(findValue + "%", pageable(sort));
+            case "email" -> employeeRepository.findAllByEmailLikeIgnoreCase(findValue + "%", pageable(sort));
+            case "storeId" -> employeeRepository.findAllByStoreId(Integer.parseInt(findValue), pageable(sort));
+            case "position" -> employeeRepository.findAllByPositionLikeIgnoreCase(findValue + "%", pageable(sort));
+            default -> throw new IllegalStateException("Unexpected value: " + findBy);
+        };
+    }
 }

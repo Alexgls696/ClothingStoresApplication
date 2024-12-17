@@ -71,7 +71,6 @@ async function deleteById(table,id) {
 }
 
 async function addDeleteButtonListeners(name,table) {
-
     let access = await checkRoleForDelete();
     if(!access){
         return;
@@ -85,4 +84,11 @@ async function addDeleteButtonListeners(name,table) {
             }
         });
     });
+}
+
+function showError(message) {
+    // Устанавливаем текст сообщения об ошибке
+    document.getElementById('errorMessage').innerText = message;
+    let toast = new bootstrap.Toast(document.getElementById('errorToast'));
+    toast.show();
 }

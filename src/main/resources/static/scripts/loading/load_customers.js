@@ -11,9 +11,9 @@ class Customer {
 
 const ip = location.host;
 
-async function getCustomers(orderBy) {
+async function getCustomers(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/customers${orderBy}`);
+        const response = await fetch(`http://${ip}/api/customers/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -74,16 +74,21 @@ async function showCustomers(customers) {
 }
 
 let sortCustomers = {
-    id: '/asc',
-    name: '/asc',
-    surname: '/asc',
-    email: '/asc',
-    phoneNumber: '/asc',
-    orderId: '/asc',
+    id: 'asc',
+    name: 'asc',
+    surname: 'asc',
+    email: 'asc',
+    phoneNumber: 'asc',
+    orderId: 'asc',
 };
 
-async function showSortedCustomers(orderBy) {
-    customers = await getCustomers(orderBy);
+const FIND_BY = 'id';
+
+let findBy = 'id';
+let findValue = 0;
+
+async function showSortedCustomers(sortBy,sortType) {
+    customers = await getCustomers(findBy,findValue,sortBy,sortType);
     await showCustomers(customers);
     addHeadersListeners();
 }
@@ -97,33 +102,33 @@ function addHeadersListeners() {
     const orderId = document.getElementById('customer-orderId-header');
 
     id.addEventListener('click', async () => {
-        sortCustomers.id = sortCustomers.id === '/asc' ? '/desc' : '/asc';
-        await showSortedCustomers('/orderById' + sortCustomers.id);
+        sortCustomers.id = sortCustomers.id === 'asc' ? 'desc' : 'asc';
+        await showSortedCustomers('customerId' , sortCustomers.id);
     });
 
     firstName.addEventListener('click', async () => {
-        sortCustomers.name = sortCustomers.name === '/asc' ? '/desc' : '/asc';
-        await showSortedCustomers('/orderByFirstName' + sortCustomers.name);
+        sortCustomers.name = sortCustomers.name === 'asc' ? 'desc' : 'asc';
+        await showSortedCustomers('firstName',  sortCustomers.name);
     });
 
     lastName.addEventListener('click', async () => {
-        sortCustomers.surname = sortCustomers.surname === '/asc' ? '/desc' : '/asc';
-        await showSortedCustomers('/orderByLastName' + sortCustomers.surname);
+        sortCustomers.surname = sortCustomers.surname === 'asc' ? 'desc' : 'asc';
+        await showSortedCustomers('lastName' , sortCustomers.surname);
     });
 
     email.addEventListener('click', async () => {
-        sortCustomers.email = sortCustomers.email === '/asc' ? '/desc' : '/asc';
-        await showSortedCustomers('/orderByEmail' + sortCustomers.email);
+        sortCustomers.email = sortCustomers.email === 'asc' ? 'desc' : 'asc';
+        await showSortedCustomers('email' , sortCustomers.email);
     });
 
     phoneNumber.addEventListener('click', async () => {
-        sortCustomers.phoneNumber = sortCustomers.phoneNumber === '/asc' ? '/desc' : '/asc';
-        await showSortedCustomers('/orderByPhoneNumber' + sortCustomers.phoneNumber);
+        sortCustomers.phoneNumber = sortCustomers.phoneNumber === 'asc' ? 'desc' : 'asc';
+        await showSortedCustomers('phoneNumber'  ,sortCustomers.phoneNumber);
     });
 
     orderId.addEventListener('click', async () => {
-        sortCustomers.orderId = sortCustomers.orderId === '/asc' ? '/desc' : '/asc';
-        await showSortedCustomers('/orderByOrderId' + sortCustomers.orderId);
+        sortCustomers.orderId = sortCustomers.orderId === 'asc' ? 'desc' : 'asc';
+        await showSortedCustomers('orderId', sortCustomers.orderId);
     });
 }
 
@@ -351,7 +356,7 @@ function addCustomerButton() {
 
 let customers = null;
 (async () => {
-    customers = await getCustomers('/orderById/asc');
+    customers = await getCustomers('id','0','customerId','asc');
     await showCustomers(customers);
     addHeadersListeners();
    await addDeleteButtonListeners('клиента','customers');

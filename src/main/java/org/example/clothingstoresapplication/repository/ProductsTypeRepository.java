@@ -21,4 +21,7 @@ public interface ProductsTypeRepository extends CrudRepository<ProductsType, Int
 
     @Query(value = "from ProductsType ")
     Page<ProductsType> findAllOrderByName(Pageable pageable);
+
+    Page<ProductsType>findAllByTypeId(Integer id, Pageable pageable);
+    Page<ProductsType> findAllByTypeNameLikeIgnoreCase(String name, Pageable pageable);
 }

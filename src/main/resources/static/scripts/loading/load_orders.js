@@ -9,9 +9,9 @@ class Order {
 
 const ip = location.host;
 
-async function getOrders(orderBy) {
+async function getOrders(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/orders${orderBy}`);
+        const response = await fetch(`http://${ip}/api/orders/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -25,12 +25,8 @@ async function getOrders(orderBy) {
     }
 }
 
-let sortOrders = {
-    id: '/asc',
-    date: '/asc',
-    storeId: '/asc',
-    statusId: '/asc'
-};
+
+
 
 async function showOrders(orders) {
     const ordersTable = document.getElementById('orders-table');
@@ -62,8 +58,20 @@ ${access ? `<td>
     addRowClickListeners();
 }
 
-async function showSortedOrders(orderBy) {
-    orders = await getOrders(orderBy);
+
+let sortOrders = {
+    id: 'asc',
+    date: 'asc',
+    storeId: 'asc',
+    statusId: 'asc'
+};
+
+const FIND_BY = 'orderId';
+let findBy = 'orderId';
+let findValue = 0;
+
+async function showSortedOrders(sortBy,sortType) {
+    orders = await getOrders(findBy,findValue,sortBy,sortType);
     await showOrders(orders);
     addHeadersListeners();
 }
@@ -75,23 +83,23 @@ function addHeadersListeners() {
     const statusId = document.getElementById('order-status-header');
 
     id.addEventListener('click', async () => {
-        sortOrders.id = sortOrders.id === '/asc' ? '/desc' : '/asc';
-        await showSortedOrders('/orderById' + sortOrders.id);
+        sortOrders.id = sortOrders.id === 'asc' ? 'desc' : 'asc';
+        await showSortedOrders('orderId' , sortOrders.id);
     });
 
     date.addEventListener('click', async () => {
-        sortOrders.date = sortOrders.date === '/asc' ? '/desc' : '/asc';
-        await showSortedOrders('/orderByDate' + sortOrders.date);
+        sortOrders.date = sortOrders.date === 'asc' ? 'desc' : 'asc';
+        await showSortedOrders('orderDate' , sortOrders.date);
     });
 
     storeId.addEventListener('click', async () => {
-        sortOrders.storeId = sortOrders.storeId === '/asc' ? '/desc' : '/asc';
-        await showSortedOrders('/orderByStoreId' + sortOrders.storeId);
+        sortOrders.storeId = sortOrders.storeId === 'asc' ? 'desc' : 'asc';
+        await showSortedOrders('storeId' , sortOrders.storeId);
     });
 
     statusId.addEventListener('click', async () => {
-        sortOrders.statusId = sortOrders.statusId === '/asc' ? '/desc' : '/asc';
-        await showSortedOrders('/orderByStatusId' + sortOrders.statusId);
+        sortOrders.statusId = sortOrders.statusId === 'asc' ? 'desc' : 'asc';
+        await showSortedOrders('statusId',  sortOrders.statusId);
     });
 }
 
@@ -142,7 +150,7 @@ function collectEditedData() {
         const orderDate = row.children[1].querySelector('input').value.trim();
         const storeId = row.children[2].querySelector('input').value.trim();
         const statusId = row.children[3].querySelector('input').value.trim();
-        editedData.push({ orderId: id, orderDate, storeId, statusId });
+        editedData.push({orderId: id, orderDate, storeId, statusId});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -181,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(saveButton);
     addDeleteAllButton('api/orders/deleteAll')
 });
+
 //--------------------------------------------------------------------------------------
 
 function createOrderModal() {
@@ -297,10 +306,10 @@ function addOrderButton() {
 
 let orders = null;
 (async () => {
-    orders = await getOrders('/orderById/asc');
-   await showOrders(orders);
+    orders = await getOrders(findBy,'0','orderId','asc');
+    await showOrders(orders);
     addHeadersListeners();
-   await addDeleteButtonListeners('заказ', 'orders');
+    await addDeleteButtonListeners('заказ', 'orders');
 
     createOrderModal();
     addOrderModalListener();

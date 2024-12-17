@@ -9,9 +9,9 @@ class OrderProduct {
 
 const ip = location.host;
 
-async function getOrderProducts(orderBy) {
+async function getOrderProducts(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/orderProducts${orderBy}`);
+        const response = await fetch(`http://${ip}/api/orderProducts/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -28,11 +28,16 @@ async function getOrderProducts(orderBy) {
     }
 }
 
+const FIND_BY = 'orderProductId';
+
+let findBy = 'orderProductId';
+let findValue = 0;
+
 let sortOrderProducts = {
-    id: '/asc',
-    productId: '/asc',
-    orderId: '/asc',
-    count: '/asc',
+    id: 'asc',
+    productId: 'asc',
+    orderId: 'asc',
+    count: 'asc'
 };
 
 async function showOrderProducts(orderProducts) {
@@ -66,8 +71,8 @@ ${access ? `<td>
     addRowClickListeners();
 }
 
-async function showSortedOrderProducts(orderBy) {
-    orderProducts = await getOrderProducts(orderBy);
+async function showSortedOrderProducts(sortBy,sortType) {
+    orderProducts = await getOrderProducts(findBy,findValue,sortBy,sortType);
     await showOrderProducts(orderProducts);
     addHeadersListeners();
 }
@@ -79,23 +84,23 @@ function addHeadersListeners() {
     const count = document.getElementById('order-product-count-header');
 
     id.addEventListener('click', async () => {
-        sortOrderProducts.id = sortOrderProducts.id === '/asc' ? '/desc' : '/asc';
-        await showSortedOrderProducts('/orderById' + sortOrderProducts.id);
+        sortOrderProducts.id = sortOrderProducts.id === 'asc' ? 'desc' : 'asc';
+        await showSortedOrderProducts('orderProductId' , sortOrderProducts.id);
     });
 
     productId.addEventListener('click', async () => {
-        sortOrderProducts.productId = sortOrderProducts.productId === '/asc' ? '/desc' : '/asc';
-        await showSortedOrderProducts('/orderByProductId' + sortOrderProducts.productId);
+        sortOrderProducts.productId = sortOrderProducts.productId === 'asc' ? 'desc' : 'asc';
+        await showSortedOrderProducts('productId' , sortOrderProducts.productId);
     });
 
     orderId.addEventListener('click', async () => {
-        sortOrderProducts.orderId = sortOrderProducts.orderId === '/asc' ? '/desc' : '/asc';
-        await showSortedOrderProducts('/orderByOrderId' + sortOrderProducts.orderId);
+        sortOrderProducts.orderId = sortOrderProducts.orderId === 'asc' ? 'desc' : 'asc';
+        await showSortedOrderProducts('orderId' , sortOrderProducts.orderId);
     });
 
     count.addEventListener('click', async () => {
-        sortOrderProducts.count = sortOrderProducts.count === '/asc' ? '/desc' : '/asc';
-        await showSortedOrderProducts('/orderByCount' + sortOrderProducts.count);
+        sortOrderProducts.count = sortOrderProducts.count === 'asc' ? 'desc' : 'asc';
+        await showSortedOrderProducts('count'  ,sortOrderProducts.count);
     });
 }
 
@@ -303,7 +308,7 @@ function addOrderProductButton() {
 
 let orderProducts = null;
 (async () => {
-    orderProducts = await getOrderProducts('/orderById/asc');
+    orderProducts = await getOrderProducts(findBy,'0','orderProductId','asc');
     await showOrderProducts(orderProducts);
     addHeadersListeners();
     await addDeleteButtonListeners('товар-заказ', 'orderProducts');

@@ -8,9 +8,9 @@ class Category {
 
 const ip = location.host;
 
-async function getCategories(orderBy) {
+async function getCategories(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/categories${orderBy}`);
+        const response = await fetch(`http://${ip}/api/categories/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -57,12 +57,16 @@ ${access ? `<td>
 
 
 let sortCategory = {
-    id: '/asc',
-    name: '/asc'
+    id: 'asc',
+    name: 'asc'
 };
 
-async function showSortedCategories(orderBy) {
-    categories = await getCategories(orderBy);
+const FIND_BY = 'id';
+let findBy = 'id';
+let findValue = 0;
+
+async function showSortedCategories(sortBy,sortType) {
+    categories = await getCategories(findBy,findValue,sortBy,sortType);
     await showCategories(categories);
     addHeadersListeners();
 }
@@ -72,13 +76,13 @@ function addHeadersListeners() {
     const name = document.getElementById('category-name-header');
 
     id.addEventListener('click', async () => {
-        sortCategory.id = sortCategory.id === '/asc' ? '/desc' : '/asc'; // Меняем порядок
-        await showSortedCategories('/orderById' + sortCategory.id);
+        sortCategory.id = sortCategory.id === 'asc' ? 'desc' : 'asc'; // Меняем порядок
+        await showSortedCategories('categoryId',sortCategory.id);
     });
 
     name.addEventListener('click', async () => {
-        sortCategory.name = sortCategory.name === '/asc' ? '/desc' : '/asc'; // Меняем порядок
-        await showSortedCategories('/orderByName' + sortCategory.name);
+        sortCategory.name = sortCategory.name === 'asc' ? 'desc' : 'asc'; // Меняем порядок
+        await showSortedCategories('categoryName', sortCategory.name);
     });
 }
 
@@ -237,12 +241,15 @@ function addCategoryModalListener() {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка при добавлении категории: ${response.status}`);
+                let data =  await response.json()
+                showError(data.message)
+                closeButton.click();
+                return
             }
 
             const addedCategory = await response.json();
             categories.push(new Category(addedCategory.categoryId, addedCategory.categoryName));
-            showCategories(categories);
+            await showCategories(categories);
             addHeadersListeners();
 
             hideModal(); // Закрытие модального окна
@@ -267,7 +274,7 @@ function addAddObjectButton() {
 
 let categories = null;
 (async () => {
-    categories = await getCategories('/orderById/asc');
+    categories = await getCategories(findBy, '0', 'categoryId', 'asc');
     await showCategories(categories);
     addHeadersListeners();
     await addDeleteButtonListeners('категорию', 'categories');

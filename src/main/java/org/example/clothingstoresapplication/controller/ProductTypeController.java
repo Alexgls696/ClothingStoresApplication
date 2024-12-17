@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/productTypes")
@@ -66,5 +67,21 @@ public class ProductTypeController {
     public Iterable<ProductsType> getCategoriesByTypeId(@PathVariable("type") String type){
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"typeName");
         return productsTypeRepository.findAllOrderByName(pageable(sort));
+    }
+
+    @GetMapping("/findBy")
+    public Iterable<ProductsType> getProductsTypesBy(@RequestParam Map<String, String> parameters) {
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+        return switch (findBy) {
+            case "typeId" -> productsTypeRepository.findAll(pageable(sort));
+            case "typeName" -> productsTypeRepository.findAllByTypeNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            default -> throw new IllegalStateException("Unexpected value: " + findBy);
+        };
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -99,4 +100,24 @@ public class ProductsController {
         Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"supplierId");
         return productRepository.findAllOrderBySupplierId(pageable(sort));
     }
+
+    @GetMapping("/findBy")
+    public Iterable<Product> getProductsBy(@RequestParam Map<String, String> parameters) {
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+        return switch (findBy) {
+            case "productId" -> productRepository.findAll(pageable(sort));
+            case "productName" -> productRepository.findAllByProductNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "categoryId" -> productRepository.findAllByCategoryId(Integer.parseInt(findValue), pageable(sort));
+            case "typeId" -> productRepository.findAllByTypeId(Integer.parseInt(findValue), pageable(sort));
+            case "supplierId" -> productRepository.findAllBySupplierId(Integer.parseInt(findValue), pageable(sort));
+            default -> throw new IllegalStateException("Unexpected value: " + findBy);
+        };
+    }
+
 }
