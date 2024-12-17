@@ -82,12 +82,11 @@ public class CategoriesController {
 
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
-        return switch (findBy) {
-            case "id" -> categoriesRepository.findAll(pageable(sort));
-            case "categoryName" -> categoriesRepository.findAllByCategoryNameLikeIgnoreCaseOrderByCategoryName(findValue+"%", pageable(sort));
+        var result = switch (findBy) {
+            case "categoryId" -> categoriesRepository.findAll(pageable(sort));
+            case "categoryName" -> categoriesRepository.findAllByCategoryNameLikeIgnoreCase(findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
+        return result;
     }
-
-
 }

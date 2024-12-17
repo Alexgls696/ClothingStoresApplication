@@ -16,6 +16,7 @@ async function getCategories(findBy,findValue,sortBy,sortType) {
         }
         const categoryData = await response.json();
         const data = categoryData.content;
+        console.log(data);
         return data.map(category => {
             return new Category(category.categoryId, category.categoryName);
         })
@@ -61,11 +62,12 @@ let sortCategory = {
     name: 'asc'
 };
 
-const FIND_BY = 'id';
-let findBy = 'id';
+const FIND_BY = 'categoryId';
+let findBy = 'categoryId';
 let findValue = 0;
 
 async function showSortedCategories(sortBy,sortType) {
+    console.log(findBy+" "+findValue+" "+sortBy+" "+sortType)
     categories = await getCategories(findBy,findValue,sortBy,sortType);
     await showCategories(categories);
     addHeadersListeners();
@@ -74,14 +76,13 @@ async function showSortedCategories(sortBy,sortType) {
 function addHeadersListeners() {
     const id = document.getElementById('category-id-header');
     const name = document.getElementById('category-name-header');
-
     id.addEventListener('click', async () => {
-        sortCategory.id = sortCategory.id === 'asc' ? 'desc' : 'asc'; // Меняем порядок
+        sortCategory.id = sortCategory.id === 'asc' ? 'desc' : 'asc';
         await showSortedCategories('categoryId',sortCategory.id);
     });
 
     name.addEventListener('click', async () => {
-        sortCategory.name = sortCategory.name === 'asc' ? 'desc' : 'asc'; // Меняем порядок
+        sortCategory.name = sortCategory.name === 'asc' ? 'desc' : 'asc';
         await showSortedCategories('categoryName', sortCategory.name);
     });
 }
@@ -255,8 +256,8 @@ function addCategoryModalListener() {
             addHeadersListeners();
             await addDeleteButtonListener('categories',categoryName);
 
-            hideModal(); // Закрытие модального окна
-            document.getElementById('addCategoryForm').reset(); // Очистка формы
+            hideModal();
+            document.getElementById('addCategoryForm').reset();
         } catch (error) {
             console.error('Ошибка при добавлении категории:', error);
         }
@@ -277,7 +278,7 @@ function addAddObjectButton() {
 
 function addSearchButtonListener(sortBy){
     document.getElementById('searchButton').addEventListener('click', async function() {
-         findBy = document.getElementById('searchField').value;
+        findBy = document.getElementById('searchField').value;
         findValue = document.getElementById('searchInput').value;
         categories = await getCategories(findBy,findValue,sortBy,'asc');
         await showCategories(categories);

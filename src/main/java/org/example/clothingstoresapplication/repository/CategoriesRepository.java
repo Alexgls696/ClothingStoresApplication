@@ -20,6 +20,6 @@ public interface CategoriesRepository extends CrudRepository<Category, Integer> 
     @Query(value = "from Category ")
     Page<Category> findAllOrderByCategoryName(Pageable pageable);
 
-    Page<Category> findAllByCategoryNameLikeIgnoreCaseOrderByCategoryName(String categoryName, Pageable pageable);
+    Page<Category> findAllByCategoryNameLikeIgnoreCase(String categoryName, Pageable pageable);
     Page<Category> findAllByCategoryIdOrderByCategoryId(long id,Pageable pageable);
 }
