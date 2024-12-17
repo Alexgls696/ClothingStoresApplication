@@ -10,7 +10,7 @@ const ip = location.host;
 
 async function getCategories(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/categories/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/categories/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -275,6 +275,17 @@ function addAddObjectButton() {
     addButton.addEventListener('click', showModal); // Открытие модального окна
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+         findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getCategories(findBy,findValue,sortBy,'asc');
+        await showCategories(categories);
+        await addDeleteButtonListeners('категорию', 'categories');
+        addHeadersListeners();
+    });
+}
+
 let categories = null;
 (async () => {
     categories = await getCategories(findBy, '0', 'categoryId', 'asc');
@@ -285,4 +296,5 @@ let categories = null;
     createModal();
     addCategoryModalListener();
     addAddObjectButton();
+    addSearchButtonListener('categoryId');
 })()

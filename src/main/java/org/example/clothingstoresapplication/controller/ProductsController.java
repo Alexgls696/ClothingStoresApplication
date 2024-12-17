@@ -119,5 +119,4 @@ public class ProductsController {
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
     }
-
 }

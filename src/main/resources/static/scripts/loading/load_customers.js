@@ -13,7 +13,7 @@ const ip = location.host;
 
 async function getCustomers(findBy, findValue, sortBy, sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/customers/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/customers/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -336,7 +336,7 @@ function addCustomerModalListener() {
 
             await showCustomers(customers);
             addHeadersListeners();
-            await addDeleteButtonListener('customers',firstName+' '+lastName);
+            await addDeleteButtonListener('customers', firstName + ' ' + lastName);
             hideCustomerModal(); // Закрытие модального окна
             document.getElementById('addCustomerForm').reset(); // Очистка формы
         } catch (error) {
@@ -359,7 +359,17 @@ function addCustomerButton() {
     container.appendChild(addButton);
 }
 
-//--------------------------------------------------------------------------------------
+function addSearchButtonListener(sortBy) {
+    document.getElementById('searchButton').addEventListener('click', async function () {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getCustomers(findBy, findValue, sortBy, 'asc');
+        console.log(categories);
+        await showCustomers(categories);
+        await addDeleteButtonListeners('клиента', 'customers');
+        addHeadersListeners();
+    });
+}
 
 let customers = null;
 (async () => {
@@ -371,4 +381,5 @@ let customers = null;
     createCustomerModal();
     addCustomerModalListener();
     addCustomerButton();
+    addSearchButtonListener('customerId');
 })();

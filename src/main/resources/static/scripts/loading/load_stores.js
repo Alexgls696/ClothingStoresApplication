@@ -9,7 +9,7 @@ const ip = location.host;
 
 async function getStores(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/stores/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/stores/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -268,6 +268,17 @@ function addStoreButton() {
     container.appendChild(addButton);
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getStores(findBy,findValue,sortBy,'asc');
+        await showStores(categories);
+        await addDeleteButtonListeners('магазин','stores');
+        addHeadersListeners();
+    });
+}
+
 let stores = null;
 (async () => {
     stores = await getStores(findBy, '0', 'storeId', 'asc');
@@ -278,4 +289,5 @@ let stores = null;
     createStoreModal();
     addStoreModalListener();
     addStoreButton();
+    addSearchButtonListener('storeId');
 })();

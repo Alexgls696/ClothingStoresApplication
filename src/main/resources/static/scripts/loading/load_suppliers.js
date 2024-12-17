@@ -9,7 +9,7 @@ const ip = location.host;
 
 async function getSuppliers(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/suppliers/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/suppliers/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -88,7 +88,7 @@ async function showSuppliers(suppliers) {
 function makeRowEditable(row) {
     const cells = Array.from(row.children);
     cells.forEach((cell, index) => {
-        if (index > 0) { // Пропускаем ID
+        if (index > 0 && index < 2) { // Пропускаем ID
             const input = document.createElement('input');
             input.type = 'text';
             input.value = cell.textContent.trim();
@@ -260,7 +260,6 @@ function addSupplierModalListener() {
             console.error('Ошибка при добавлении поставщика:', error);
         }
     });
-
     cancelButton.addEventListener('click', hideSupplierModal);
     closeButton.addEventListener('click', hideSupplierModal);
 }
@@ -274,6 +273,17 @@ function addSupplierButton() {
     container.appendChild(addButton);
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getSuppliers(findBy,findValue,sortBy,'asc');
+        await showSuppliers(categories);
+        await addDeleteButtonListeners('производителя','suppliers');
+        addHeadersListeners();
+    });
+}
+
 let suppliers = null;
 (async () => {
     suppliers = await getSuppliers(findBy, '0', 'supplierId', 'asc');
@@ -284,4 +294,5 @@ let suppliers = null;
     createSupplierModal();
     addSupplierModalListener();
     addSupplierButton();
+    addSearchButtonListener('supplierId');
 })();

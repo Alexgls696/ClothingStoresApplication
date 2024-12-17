@@ -102,6 +102,11 @@ async function addDeleteButtonListeners(name, table) {
     });
 }
 
+//-------------------------Поиск----------------------------------------------------------------------------------
+
+
+
+
 function showError(message) {
     document.getElementById('errorMessage').innerText = message;
     let toast = new bootstrap.Toast(document.getElementById('errorToast'));

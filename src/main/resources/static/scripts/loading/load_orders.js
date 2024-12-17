@@ -11,7 +11,7 @@ const ip = location.host;
 
 async function getOrders(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/orders/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/orders/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -309,6 +309,17 @@ function addOrderButton() {
     container.appendChild(addButton);
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getOrders(findBy,findValue,sortBy,'asc');
+        await showOrders(categories);
+        await addDeleteButtonListeners('заказ', 'orders');
+        addHeadersListeners();
+    });
+}
+
 let orders = null;
 (async () => {
     orders = await getOrders(findBy,'0','orderId','asc');
@@ -319,4 +330,5 @@ let orders = null;
     createOrderModal();
     addOrderModalListener();
     addOrderButton();
+    addSearchButtonListener('orderId');
 })();

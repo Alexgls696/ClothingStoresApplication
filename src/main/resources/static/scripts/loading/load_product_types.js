@@ -9,7 +9,7 @@ const ip = location.host;
 
 async function getProductTypes(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/productTypes/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/productTypes/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -270,6 +270,17 @@ function addProductTypeButton() {
     container.appendChild(addButton);
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getProductTypes(findBy,findValue,sortBy,'asc');
+        await showProductTypes(categories);
+        await addDeleteButtonListeners('тип товара', 'productTypes');
+        addHeadersListeners();
+    });
+}
+
 let productTypes = null;
 (async () => {
     productTypes = await getProductTypes(findBy, '0', 'typeId', 'asc');
@@ -280,4 +291,5 @@ let productTypes = null;
     createProductTypeModal();
     addProductTypeModalListener();
     addProductTypeButton();
+    addSearchButtonListener('typeId');
 })();

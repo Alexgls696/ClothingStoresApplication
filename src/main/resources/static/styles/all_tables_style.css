@@ -16,5 +16,18 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1050; /* Убедитесь, что оно поверх других элементов */
+    z-index: 1050;
+}
+
+
+#searchInput {
+    flex: 3;
+}
+
+#searchField {
+    flex: 1;
+}
+
+.container {
+    margin-top: 0;
 }

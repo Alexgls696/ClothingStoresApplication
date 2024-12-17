@@ -83,7 +83,7 @@ public class CategoriesController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "id" -> categoriesRepository.findAll(pageable(sort)); // Предполагается, что у вас есть метод для получения всех категорий
+            case "id" -> categoriesRepository.findAll(pageable(sort));
             case "categoryName" -> categoriesRepository.findAllByCategoryNameLikeIgnoreCaseOrderByCategoryName(findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };

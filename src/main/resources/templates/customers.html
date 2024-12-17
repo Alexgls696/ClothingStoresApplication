@@ -55,6 +55,20 @@
     <div id="actions-container">
 
     </div>
+    <div class="container mt-2">
+        <div class="input-group" style="justify-content: flex-start;">
+            <input type="text" id="searchInput" class="form-control"  placeholder="Введите значение для поиска">
+            <select id="searchField" class="form-select">
+                <option value="firstName">Имя</option>
+                <option value="lastName">Фамилия</option>
+                <option value="email">Почта</option>
+                <option value="phoneNumber">Телефон</option>
+                <option value="orderId">Id заказа</option>
+            </select>
+            <button class="btn btn-primary" id="searchButton">Поиск</button>
+        </div>
+        <div class="mt-3" id="result"></div>
+    </div>
     <table class="table table-bordered" id="customers-table">
 
     </table>

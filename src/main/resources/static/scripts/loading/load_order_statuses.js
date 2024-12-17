@@ -9,7 +9,7 @@ const ip = location.host;
 
 async function getOrderStatuses(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/orderStatuses/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/orderStatuses/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -273,6 +273,17 @@ function addOrderStatusButton() {
     container.appendChild(addButton);
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getOrderStatuses(findBy,findValue,sortBy,'asc');
+        await showOrderStatuses(categories);
+        await addDeleteButtonListeners('статус заказа', 'orderStatuses');
+        addHeadersListeners();
+    });
+}
+
 let orderStatuses = null;
 (async () => {
     orderStatuses = await getOrderStatuses(findBy,'0','statusId','asc');
@@ -283,4 +294,5 @@ let orderStatuses = null;
     createOrderStatusModal();
     addOrderStatusModalListener();
     addOrderStatusButton();
+    addSearchButtonListener('statusId');
 })();

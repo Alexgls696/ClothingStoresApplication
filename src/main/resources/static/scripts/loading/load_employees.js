@@ -13,7 +13,7 @@ const ip = location.host;
 
 async function getEmployees(findBy, findValue, sortBy, sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/employees/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/employees/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -346,6 +346,16 @@ function addEmployeeButton() {
     container.appendChild(addButton);
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        categories = await getEmployees(findBy,findValue,sortBy,'asc');
+        await showEmployees(categories);
+        await addDeleteButtonListeners('сотрудника', 'employees');
+        addHeadersListeners();
+    });
+}
 
 let employees = null;
 (async () => {
@@ -357,4 +367,5 @@ let employees = null;
     createEmployeeModal();
     addEmployeeModalListener();
     addEmployeeButton();
+    addSearchButtonListener('employeeId');
 })();

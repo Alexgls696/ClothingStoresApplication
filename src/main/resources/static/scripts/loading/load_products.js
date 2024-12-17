@@ -13,7 +13,7 @@ const ip = location.host;
 
 async function getProducts(findBy,findValue,sortBy,sortType) {
     try {
-        const response = await fetch(`http://${ip}/api/products/findBy?findBy=${findBy}&findValue${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        const response = await fetch(`http://${ip}/api/products/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -49,6 +49,7 @@ let findBy = 'productId';
 let findValue = 0;
 
 async function showSortedProducts(sortBy,sortType) {
+    console.log(findBy,findValue,sortBy,sortType)
     products = await getProducts(findBy,findValue,sortBy,sortType)
     await showProducts(products);
     addHeadersListeners();
@@ -88,7 +89,7 @@ function addHeadersListeners() {
     });
 
     supplierId.addEventListener('click', async () => {
-        sortProducts.supplierId = sortProducts.supplierId === '/asc' ? '/desc' : '/asc';
+        sortProducts.supplierId = sortProducts.supplierId === 'asc' ? 'desc' : 'asc';
         await showSortedProducts('supplierId' , sortProducts.supplierId);
     });
 }
@@ -352,6 +353,18 @@ function addProductButton() {
     container.appendChild(addButton);
 }
 
+function addSearchButtonListener(sortBy){
+    document.getElementById('searchButton').addEventListener('click', async function() {
+        findBy = document.getElementById('searchField').value;
+        findValue = document.getElementById('searchInput').value;
+        console.log(findBy,findValue);
+        categories = await getProducts(findBy,findValue,sortBy,'asc');
+        await showProducts(categories);
+        await addDeleteButtonListeners('товар', 'products');
+        addHeadersListeners();
+    });
+}
+
 let products = null;
 (async () => {
     products = await getProducts(findBy,'0','productId','asc');
@@ -362,4 +375,5 @@ let products = null;
     createProductModal();
     addProductModalListener();
     addProductButton();
+    addSearchButtonListener('productId');
 })();
