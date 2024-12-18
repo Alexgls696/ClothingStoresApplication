@@ -20,6 +20,7 @@ public class Error {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String error;
+    @Column(name = "error_date")
     private Timestamp timestamp;
 
     public Error(String error, Date date) {

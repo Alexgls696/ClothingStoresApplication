@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository
-@Transactional
 public interface SupplierRepository extends CrudRepository<Supplier, Integer> {
     Page<Supplier> findAll(Pageable pageable);
 

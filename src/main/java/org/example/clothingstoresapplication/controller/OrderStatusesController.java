@@ -6,6 +6,7 @@ import org.example.clothingstoresapplication.repository.OrderStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orderStatuses")
+@Transactional
 public class OrderStatusesController {
     private OrderStatusRepository orderStatusRepository;
 

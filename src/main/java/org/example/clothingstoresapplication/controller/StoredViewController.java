@@ -6,6 +6,7 @@ import org.example.clothingstoresapplication.entity.stored_views.CustomersAndCou
 import org.example.clothingstoresapplication.entity.stored_views.StoresAndEmployeesCount;
 import org.example.clothingstoresapplication.repository.stored_views.StoredViewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/storedViews")
+@Transactional
 public class StoredViewController {
     private StoredViewsRepository storedViewsRepository;
 

@@ -1,14 +1,12 @@
 package org.example.clothingstoresapplication.repository;
 
-import jakarta.persistence.PersistenceContext;
 import org.example.clothingstoresapplication.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface CategoriesRepository extends CrudRepository<Category, Integer> {

@@ -234,6 +234,7 @@ function addProductTypeModalListener() {
                 body: JSON.stringify(newProductType),
             });
 
+            console.log(response);
             if (!response.ok) {
                 let data =  await response.json()
                 showError(data.message)

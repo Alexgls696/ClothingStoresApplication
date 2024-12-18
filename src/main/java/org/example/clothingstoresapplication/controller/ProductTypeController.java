@@ -1,13 +1,11 @@
 package org.example.clothingstoresapplication.controller;
 
-import org.example.clothingstoresapplication.entity.Category;
-import org.example.clothingstoresapplication.entity.OrderStatus;
 import org.example.clothingstoresapplication.entity.ProductsType;
-import org.example.clothingstoresapplication.repository.OrderStatusRepository;
 import org.example.clothingstoresapplication.repository.ProductsTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/productTypes")
+@Transactional
 public class ProductTypeController {
     private ProductsTypeRepository productsTypeRepository;
 

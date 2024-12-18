@@ -16,12 +16,10 @@ async function getCategories(findBy,findValue,sortBy,sortType) {
         }
         const categoryData = await response.json();
         const data = categoryData.content;
-        console.log(data);
         return data.map(category => {
             return new Category(category.categoryId, category.categoryName);
         })
     } catch (error) {
-        console.log(error);
     }
 }
 
@@ -67,7 +65,6 @@ let findBy = 'categoryId';
 let findValue = 0;
 
 async function showSortedCategories(sortBy,sortType) {
-    console.log(findBy+" "+findValue+" "+sortBy+" "+sortType)
     categories = await getCategories(findBy,findValue,sortBy,sortType);
     await showCategories(categories);
     addHeadersListeners();

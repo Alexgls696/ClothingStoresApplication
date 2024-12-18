@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional
 public interface OrderStatusRepository extends CrudRepository<OrderStatus, Integer> {
     Page<OrderStatus> findAll(Pageable pageable);
 

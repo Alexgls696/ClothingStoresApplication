@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional
 public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
     Page<Employee> findAll(Pageable pageable);
 

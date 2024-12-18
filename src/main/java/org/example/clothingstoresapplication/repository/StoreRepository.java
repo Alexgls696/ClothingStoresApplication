@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
 public interface StoreRepository extends CrudRepository<Store, Integer> {
     Page<Store> findAll(Pageable pageable);
 

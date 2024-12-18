@@ -237,8 +237,11 @@ function addOrderStatusModalListener() {
                 body: JSON.stringify(newOrderStatus),
             });
 
+
+
             if (!response.ok) {
                 let data =  await response.json()
+                console.log(response);
                 showError(data.message)
                 closeButton.click();
                 return

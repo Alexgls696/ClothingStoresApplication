@@ -54,7 +54,9 @@ async function deleteById(table, id) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            let data =  await response.json()
+            showError(data.message)
+            return;
         }
 
         const button = document.querySelector(`button[data-id="${id}"]`);
@@ -101,11 +103,6 @@ async function addDeleteButtonListeners(name, table) {
         });
     });
 }
-
-//-------------------------Поиск----------------------------------------------------------------------------------
-
-
-
 
 function showError(message) {
     document.getElementById('errorMessage').innerText = message;
