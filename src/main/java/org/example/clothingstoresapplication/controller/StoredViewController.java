@@ -1,6 +1,5 @@
 package org.example.clothingstoresapplication.controller;
 
-import org.example.clothingstoresapplication.entity.Employee;
 import org.example.clothingstoresapplication.entity.stored_views.CustomerAndHisProduct;
 import org.example.clothingstoresapplication.entity.stored_views.CustomersAndCountProductsView;
 import org.example.clothingstoresapplication.entity.stored_views.StoresAndEmployeesCount;
@@ -24,12 +23,12 @@ public class StoredViewController {
         this.storedViewsRepository = storedViewsRepository;
     }
 
-    @GetMapping("/employersAndCountProducts")
-    public List<CustomersAndCountProductsView> getEmployersAndCountProducts() {
-        return storedViewsRepository.getEmployersAndCountProducts();
+    @GetMapping("/customersAndCountProducts")
+    public List<CustomersAndCountProductsView> getCusAndCountProducts() {
+        return storedViewsRepository.getCustomersAndCountProducts();
     }
 
-    @GetMapping("/storedAndEmployeesCount")
+    @GetMapping("/storesAndEmployeesCount")
     public List<StoresAndEmployeesCount> getStoredAndEmployeesCount() {
         return storedViewsRepository.getStoresAndEmployeesCount();
     }

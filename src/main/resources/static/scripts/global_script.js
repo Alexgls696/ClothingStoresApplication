@@ -109,3 +109,12 @@ function showError(message) {
     let toast = new bootstrap.Toast(document.getElementById('errorToast'));
     toast.show();
 }
+
+(async ()=>{
+    let role = await getRole();
+    console.log(role);
+    if(role==='role_admin'){
+        const menu = document.getElementById('menu');
+        menu.innerHTML+='<a href="/pages/customersProducts">Хранимые представления</a>'
+    }
+})();

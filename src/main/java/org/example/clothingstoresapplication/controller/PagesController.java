@@ -92,4 +92,25 @@ public class PagesController {
     public String showAbout(){
         return "about";
     }
+
+    @RequestMapping("/customersProducts")
+    public String showCustomersProducts(Model model){
+        var user = getCurrentUser();
+        model.addAttribute("user",user);
+        return "stored_views/customers_and_their_products";
+    }
+
+    @RequestMapping("/customersCountProducts")
+    public String showCustomersCountProducts(Model model){
+        var user = getCurrentUser();
+        model.addAttribute("user",user);
+        return "stored_views/customers_and_count_products";
+    }
+
+    @RequestMapping("/storesAndEmployeesCount")
+    public String showStoresAndEmployeesCount(Model model){
+        var user = getCurrentUser();
+        model.addAttribute("user",user);
+        return "stored_views/stores_and_employees_count";
+    }
 }
