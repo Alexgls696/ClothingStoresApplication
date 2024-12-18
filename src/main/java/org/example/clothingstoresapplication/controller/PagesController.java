@@ -87,4 +87,9 @@ public class PagesController {
         model.addAttribute("user",user);
         return "suppliers";
     }
+
+    @RequestMapping("/about")
+    public String showAbout(){
+        return "about";
+    }
 }

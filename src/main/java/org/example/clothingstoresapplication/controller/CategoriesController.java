@@ -22,7 +22,6 @@ public class CategoriesController {
         this.categoriesRepository = categoriesRepository;
     }
 
-
     @GetMapping
     public Iterable<Category>getCategories() {
         return categoriesRepository.findAll(Pageable.unpaged());
@@ -76,7 +75,7 @@ public class CategoriesController {
         return categoriesRepository.findAllOrderByCategoryName(pageable(sort));
     }
 
-    @GetMapping("/findBy")
+    /*@GetMapping("/findBy")
     public Iterable<Category> getCategoriesBy(@RequestParam Map<String, String> parameters) {
         String sortType = parameters.get("sortType");
         String sortBy = parameters.get("sortBy");
@@ -90,6 +89,28 @@ public class CategoriesController {
             case "categoryName" -> categoriesRepository.findAllByCategoryNameLikeIgnoreCase(findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
+        return result;
+    }*/
+
+    @GetMapping("findBy")
+    public Iterable<Category> findBy(@RequestParam Map<String, String> parameters) {
+        String sortType = parameters.get("sortType");
+        String sortBy = parameters.get("sortBy");
+        String findBy = parameters.get("findBy");
+        String findValue = parameters.get("findValue");
+
+        sortBy = switch (sortBy){
+            case "categoryName" -> "category_name";
+            case "categoryId" -> "category_id";
+            default -> null;
+        };
+
+        findBy = switch (findBy){
+            case "categoryName" -> "category_name";
+            case "categoryId" -> "category_id";
+            default -> null;
+        };
+        var result = categoriesRepository.findAllCategoriesByParams(findBy,findValue,sortBy,sortType);
         return result;
     }
 }

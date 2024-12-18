@@ -1,17 +1,12 @@
 
 package org.example.clothingstoresapplication.database_configuration;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.PersistenceContext;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -31,7 +26,6 @@ import java.util.Properties;
 public class DynamicDatabaseConfig {
 
     private final Map<Object, Object> dataSources = new HashMap<>();
-
     public static String DEFAULT_USER = "_admin";
     public static String DEFAULT_PASSWORD = "12341234";
 
@@ -47,8 +41,6 @@ public class DynamicDatabaseConfig {
         dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);
         return dynamicDataSource;
     }
-
-
 
     public void addDataSource(String key, DatabaseCredentials credentials) throws SQLException {
         BasicDataSource dataSource = new BasicDataSource();
@@ -105,7 +97,6 @@ public class DynamicDatabaseConfig {
         sessionFactoryBean.setJpaProperties(hibernateProperties);
         sessionFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         sessionFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-
         return sessionFactoryBean;
     }
 

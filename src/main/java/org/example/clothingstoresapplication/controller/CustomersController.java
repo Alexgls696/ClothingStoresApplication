@@ -1,7 +1,5 @@
 package org.example.clothingstoresapplication.controller;
 
-
-import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.Customer;
 import org.example.clothingstoresapplication.repository.CustomersRepository;
 import org.springframework.beans.factory.annotation.Autowired;

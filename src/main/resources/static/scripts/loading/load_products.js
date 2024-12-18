@@ -192,7 +192,7 @@ async function saveEditedData() {
     const editedData = collectEditedData();
     if (editedData.length > 0) {
         try {
-            const response = await fetch(`http://${ip}/api/products/updateAll`, {
+            const response = await fetch(`http://${ip}/api/products/updateAllByParams`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

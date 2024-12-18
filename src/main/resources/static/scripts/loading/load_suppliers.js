@@ -186,10 +186,6 @@ function createSupplierModal() {
                 <div class="modal-body">
                     <form id="addSupplierForm">
                         <div class="form-group">
-                            <label for="supplierIdInput">ID поставщика</label>
-                            <input type="number" class="form-control" id="supplierIdInput" required>
-                        </div>
-                        <div class="form-group">
                             <label for="supplierNameInput">Название поставщика</label>
                             <input type="text" class="form-control" id="supplierNameInput" required>
                         </div>

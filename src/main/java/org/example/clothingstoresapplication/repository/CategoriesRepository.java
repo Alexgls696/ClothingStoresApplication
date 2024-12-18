@@ -6,7 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public interface CategoriesRepository extends CrudRepository<Category, Integer> {
@@ -20,4 +21,7 @@ public interface CategoriesRepository extends CrudRepository<Category, Integer> 
 
     Page<Category> findAllByCategoryNameLikeIgnoreCase(String categoryName, Pageable pageable);
     Page<Category> findAllByCategoryIdOrderByCategoryId(long id,Pageable pageable);
+
+    @Query(nativeQuery = true,value = "select * from main_schema.get_sorted_categories(:findBy,:findValue,:sortBy,:sortType)")
+    List<Category>findAllCategoriesByParams(String findBy,String findValue,String sortBy, String sortType);
 }

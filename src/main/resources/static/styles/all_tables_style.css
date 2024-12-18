@@ -31,3 +31,18 @@
 .container {
     margin-top: 0;
 }
+
+@media print {
+    .menu-panel {
+        display: none;
+    }
+    .card {
+        display: none;
+    }
+    .container {
+        display: none;
+    }
+    #actions-container{
+        display: none;
+    }
+}

@@ -16,7 +16,7 @@ async function getCategories(findBy,findValue,sortBy,sortType) {
         }
         const categoryData = await response.json();
         const data = categoryData.content;
-        return data.map(category => {
+        return categoryData.map(category => {
             return new Category(category.categoryId, category.categoryName);
         })
     } catch (error) {
@@ -60,9 +60,9 @@ let sortCategory = {
     name: 'asc'
 };
 
-const FIND_BY = 'categoryId';
-let findBy = 'categoryId';
-let findValue = 0;
+const FIND_BY = 'categoryName';
+let findBy = 'categoryName';
+let findValue = '';
 
 async function showSortedCategories(sortBy,sortType) {
     categories = await getCategories(findBy,findValue,sortBy,sortType);
@@ -286,7 +286,7 @@ function addSearchButtonListener(sortBy){
 
 let categories = null;
 (async () => {
-    categories = await getCategories(findBy, '0', 'categoryId', 'asc');
+    categories = await getCategories(findBy, '', 'categoryName', 'asc');
     await showCategories(categories);
     addHeadersListeners();
     await addDeleteButtonListeners('категорию', 'categories');

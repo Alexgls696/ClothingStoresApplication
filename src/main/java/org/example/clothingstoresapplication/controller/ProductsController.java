@@ -45,7 +45,21 @@ public class ProductsController {
 
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
-        return productRepository.save(product);
+        productRepository.saveByParams(product.getProductName(),product.getPrice(),product.getCategoryId(),product.getTypeId(),product.getSupplierId());
+        return product;
+        //return productRepository.save(product);
+    }
+
+    @PostMapping("updateAllByParams")
+    public void updateAllByParams(@RequestBody List<Product> products) {
+        for(var it:products){
+            productRepository.updateByParams(it.getProductId(),
+                    it.getProductName(),
+                    it.getPrice(),
+                    it.getCategoryId(),
+                    it.getTypeId(),
+                    it.getSupplierId());
+        }
     }
 
     @PostMapping("/updateAll")
