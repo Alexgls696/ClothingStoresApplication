@@ -1,8 +1,8 @@
 package org.example.clothingstoresapplication.controller;
 
-import org.example.clothingstoresapplication.entity.stored_views.CustomerAndHisProduct;
-import org.example.clothingstoresapplication.entity.stored_views.CustomersAndCountProductsView;
-import org.example.clothingstoresapplication.entity.stored_views.StoresAndEmployeesCount;
+import org.example.clothingstoresapplication.entity.stored_views_and_functions.CustomerAndHisProduct;
+import org.example.clothingstoresapplication.entity.stored_views_and_functions.CustomersAndCountProductsView;
+import org.example.clothingstoresapplication.entity.stored_views_and_functions.StoresAndEmployeesCount;
 import org.example.clothingstoresapplication.repository.stored_views.StoredViewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

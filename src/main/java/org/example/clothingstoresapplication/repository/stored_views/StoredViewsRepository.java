@@ -1,8 +1,8 @@
 package org.example.clothingstoresapplication.repository.stored_views;
 
-import org.example.clothingstoresapplication.entity.stored_views.CustomerAndHisProduct;
-import org.example.clothingstoresapplication.entity.stored_views.CustomersAndCountProductsView;
-import org.example.clothingstoresapplication.entity.stored_views.StoresAndEmployeesCount;
+import org.example.clothingstoresapplication.entity.stored_views_and_functions.CustomerAndHisProduct;
+import org.example.clothingstoresapplication.entity.stored_views_and_functions.CustomersAndCountProductsView;
+import org.example.clothingstoresapplication.entity.stored_views_and_functions.StoresAndEmployeesCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

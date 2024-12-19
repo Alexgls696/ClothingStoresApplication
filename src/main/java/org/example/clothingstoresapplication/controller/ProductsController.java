@@ -72,6 +72,16 @@ public class ProductsController {
         productRepository.deleteAllById(ids);
     }
 
+    @PostMapping("/addProductAndCustomer")
+    public void addProductAndCustomer(@RequestBody Map<String,String>params) {
+        String productName = params.get("productName");
+        Double price = Double.valueOf(params.get("price"));
+        int categoryId = Integer.parseInt(params.get("categoryId"));
+        int typeId = Integer.parseInt(params.get("typeId"));
+        String supplierName = params.get("supplierName");
+        productRepository.addProductAndSupplier(productName,price,categoryId,typeId,supplierName);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable("id") int id){
         productRepository.deleteById(id);

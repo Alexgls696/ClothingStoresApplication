@@ -104,7 +104,7 @@ async function addDeleteButtonListeners(name, table) {
     });
 }
 
-function showError(message) {
+function showError(message,success) {
     document.getElementById('errorMessage').innerText = message;
     let toast = new bootstrap.Toast(document.getElementById('errorToast'));
     toast.show();

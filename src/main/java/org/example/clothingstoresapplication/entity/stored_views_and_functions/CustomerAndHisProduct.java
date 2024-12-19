@@ -1,4 +1,4 @@
-package org.example.clothingstoresapplication.entity.stored_views;
+package org.example.clothingstoresapplication.entity.stored_views_and_functions;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

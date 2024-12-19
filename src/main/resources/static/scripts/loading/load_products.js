@@ -365,6 +365,128 @@ function addSearchButtonListener(sortBy){
     });
 }
 
+
+function createProductAndSupplierModal() {
+    const modalHtml = `
+    <div class="modal" id="addProductAndSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addProductAndSupplierModalLabel" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog" role="document" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 5px; padding: 20px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductAndSupplierModalLabel">Добавить продукт</h5>
+                    <button type="button" class="close" id="closeProductAndSupplierModalButton" aria-label="Close" style="border: none; background: none; font-size: 1.5rem; cursor: pointer;">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductAndSupplierForm">
+                        <div class="form-group">
+                            <label for="productNameInput1">Название продукта</label>
+                            <input type="text" class="form-control" id="productNameInput1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="priceInput1">Цена</label>
+                            <input type="number" class="form-control" id="priceInput1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoryIdInput1">ID категории</label>
+                            <input type="number" class="form-control" id="categoryIdInput1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="typeIdInput1">ID типа</label>
+                            <input type="number" class="form-control" id="typeIdInput1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplierNameInput1">Название производителя</label>
+                            <input type="text" class="form-control" id="supplierNameInput1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelProductAndSupplierModalButton">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="saveProductAndSupplierButton">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function showProductAndSupplierModal() {
+    const modal = document.getElementById('addProductAndSupplierModal');
+    modal.style.display = 'block';
+}
+
+function hideProductAndSupplierModal() {
+    const modal = document.getElementById('addProductAndSupplierModal');
+    modal.style.display = 'none';
+}
+
+function addProductAndSupplierModalListener() {
+    const saveButton = document.getElementById('saveProductAndSupplierButton');
+    const cancelButton = document.getElementById('cancelProductAndSupplierModalButton');
+    const closeButton = document.getElementById('closeProductAndSupplierModalButton');
+
+    saveButton.addEventListener('click', async () => {
+        const productName = document.getElementById('productNameInput1').value.trim();
+        const price = document.getElementById('priceInput1').value.trim();
+        const categoryId = document.getElementById('categoryIdInput1').value.trim();
+        const typeId = document.getElementById('typeIdInput1').value.trim();
+        const supplierName = document.getElementById('supplierNameInput1').value.trim();
+
+        if (!productName || !price || !categoryId || !typeId || !supplierName) {
+            console.log(productName,price,categoryId,typeId,supplierName);
+            alert('Пожалуйста, заполните все поля.');
+            return;
+        }
+
+        const newProduct = {
+            productName,
+            price,
+            categoryId,
+            typeId,
+            supplierName
+        };
+
+        try {
+            const response = await fetch(`http://${ip}/api/products/addProductAndCustomer?productName=${productName}
+            &price=${price}&categoryId=${categoryId}&typeId=${typeId}&supplierName=${supplierName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newProduct),
+            });
+
+            hideProductAndSupplierModal();
+            if (response.ok) {
+                showError("Обновите страницу")
+                closeButton.click();
+            }else{
+                let data = await response.json()
+                showError(data.message);
+                closeButton.click()
+            }
+        } catch (error) {
+            console.error('Ошибка при добавлении продукта:', error);
+        }
+    });
+
+    cancelButton.addEventListener('click', hideProductModal);
+    closeButton.addEventListener('click', hideProductModal);
+}
+
+async function addAddProductAndSupplierNameButton(){
+    let role = await getRole();
+    if(role==='role_admin'){
+        const addProductAndSupplierButton = document.createElement('button');
+        const container = document.getElementById('actions-container');
+        addProductAndSupplierButton.textContent = 'Добавить продукт и производителя';
+        addProductAndSupplierButton.classList.add('btn', 'btn-primary', 'mt-3');
+        addProductAndSupplierButton.addEventListener('click', showProductAndSupplierModal);
+        container.appendChild(addProductAndSupplierButton);
+    }
+}
+
 let products = null;
 (async () => {
     products = await getProducts(findBy,'0','productId','asc');
@@ -373,7 +495,14 @@ let products = null;
     await addDeleteButtonListeners('товар', 'products');
 
     createProductModal();
+    createProductAndSupplierModal();
+
+
     addProductModalListener();
+    addProductAndSupplierModalListener();
+
     addProductButton();
+    await addAddProductAndSupplierNameButton();
     addSearchButtonListener('productId');
+
 })();

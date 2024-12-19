@@ -21,6 +21,8 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
                           @Param("category") int category,
                           @Param("type") int type,
                           @Param("supplier") int supplier);
+
+
     @Modifying
     @Query(nativeQuery = true,value = "call main_schema.update_product_by_id(:id,:name,cast(:price as numeric),:category,:type,:supplier)")
     void updateByParams(@Param("id") int id,
@@ -30,6 +32,14 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
                             @Param("type") int type,
                             @Param("supplier") int supplier);
 
+    @Modifying
+    @Query(nativeQuery = true, value = "call main_schema.add_product_and_supplier(:productName,cast(:price as numeric), " +
+            ":category,:type,:supplier)")
+    void addProductAndSupplier(@Param("productName") String productName,
+                               @Param("price") Double price,
+                               @Param("category") int category,
+                               @Param("type")int type,
+                               @Param("supplier") String supplier);
 
     Page<Product> findAll(Pageable pageable);
 

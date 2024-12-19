@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/pages")
 @Transactional
 public class PagesController {
-
     public String getCurrentUser(){
         try {
             return DatabaseController.currentUser;
