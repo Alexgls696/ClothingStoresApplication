@@ -48,7 +48,7 @@ public class DatabaseController {
             return "redirect:/pages/categories";
 
         } catch (Exception e) {
-            model.addAttribute("message", "Ошибка подключения: " + e.getMessage());
+            model.addAttribute("message", "Ошибка подключения: Проверьте логин и пароль ");
             return "result";
         }
     }
