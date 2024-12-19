@@ -16,10 +16,15 @@ public class OrderProduct {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "order_products_id")
-  private Integer orderProductId;
-  @Column(name = "product_id")
-  private Integer productId;
-  @Column(name = "order_id")
-  private Integer orderId;
+  private Integer id;
+
+  @JoinColumn(name = "product_id")
+  @ManyToOne(fetch = FetchType.EAGER)
+  private Product product;
+
+  @JoinColumn(name = "order_id")
+  @ManyToOne(fetch = FetchType.EAGER)
+  private Order order;
+
   private Integer count;
 }

@@ -1,9 +1,9 @@
 class Employee {
-    constructor(employeeId, firstName, lastName, storeId, position, email) {
-        this.employeeId = employeeId;
+    constructor(id, firstName, lastName, store, position, email) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.storeId = storeId;
+        this.store = store;
         this.position = position;
         this.email = email;
     }
@@ -20,8 +20,8 @@ async function getEmployees(findBy, findValue, sortBy, sortType) {
         const employeesData = await response.json();
         const data = employeesData.content;
         return data.map(employee => {
-            return new Employee(employee.employeeId, employee.firstName,
-                employee.lastName, employee.storeId, employee.position, employee.email);
+            return new Employee(employee.id, employee.firstName,
+                employee.lastName, employee.store, employee.position, employee.email);
         });
     } catch (error) {
         console.log(error);
@@ -52,14 +52,14 @@ async function showEmployees(employees) {
     let tbody = document.createElement('tbody');
     employees.forEach(employee => {
         tbody.innerHTML += `<tr>
-<td>${employee.employeeId}</td>
+<td>${employee.id}</td>
 <td>${employee.firstName}</td>
 <td>${employee.lastName}</td>
-<td>${employee.storeId}</td>
+<td>${employee.store.location}</td>
 <td>${employee.position}</td>
 <td>${employee.email}</td>
 ${access ? `<td>
-<button class="btn btn-danger btn-sm delete-button" data-id="${employee.employeeId}">
+<button class="btn btn-danger btn-sm delete-button" data-id="${employee.id}">
 Удалить
 </button>
 </td>` : ''} 
@@ -70,9 +70,9 @@ ${access ? `<td>
 }
 
 
-const FIND_BY = 'employeeId';
+const FIND_BY = 'id';
 
-let findBy = 'employeeId';
+let findBy = 'id';
 let findValue = 0;
 
 async function showSortedEmployees(sortBy,sortType) {
@@ -91,7 +91,7 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortEmployees.id = sortEmployees.id === 'asc' ? 'desc' : 'asc';
-        await showSortedEmployees('employeeId', sortEmployees.id);
+        await showSortedEmployees('id', sortEmployees.id);
     });
 
     firstName.addEventListener('click', async () => {
@@ -111,7 +111,7 @@ function addHeadersListeners() {
 
     storeId.addEventListener('click', async () => {
         sortEmployees.storeId = sortEmployees.storeId === 'asc' ? 'desc' : 'asc';
-        await showSortedEmployees('storeId', sortEmployees.storeId);
+        await showSortedEmployees('storeLocation', sortEmployees.storeId);
     });
 
     position.addEventListener('click', async () => {
@@ -169,7 +169,7 @@ function collectEditedData() {
         const storeId = row.children[3].querySelector('input').value.trim();
         const position = row.children[4].querySelector('input').value.trim();
         const email = row.children[5].querySelector('input').value.trim();
-        editedData.push({employeeId: id, firstName, lastName, storeId, position, email});
+        editedData.push({id: id, firstName, lastName, storeId, position, email});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -212,8 +212,31 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 //--------------------------------------------------------------------------------------
 
+class Store {
+    constructor(id, location) {
+        this.id = id;
+        this.location = location;
+    }
+}
+
+async function getStores(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/stores/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const storesData = await response.json();
+        const data = storesData.content;
+        return data.map(store => {
+            return new Store(store.id, store.location);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 // Создание модального окна для добавления сотрудника
-function createEmployeeModal() {
+async function createEmployeeModal() {
     const modalHtml = `
     <div class="modal" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="addEmployeeModalLabel" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog" role="document" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 5px; padding: 20px;">
@@ -235,8 +258,8 @@ function createEmployeeModal() {
                             <input type="text" class="form-control" id="lastNameInput" placeholder="Введите фамилию сотрудника" required>
                         </div>
                         <div class="form-group">
-                            <label for="storeIdInput">ID магазина</label>
-                            <input type="number" class="form-control" id="storeIdInput" placeholder="Введите ID магазина" required>
+                            <label for="storeIdInput">Магазина</label>
+                             <select id="store" class="form-select"></select>
                         </div>
                         <div class="form-group">
                             <label for="positionInput">Должность</label>
@@ -256,6 +279,13 @@ function createEmployeeModal() {
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    let stores = await getStores('location','','location','asc');
+    let storeContainer = document.getElementById('store');
+
+    stores.forEach(store=>{
+        storeContainer.innerHTML+=`<option value='${JSON.stringify(store)}'>${store.location}</option>`
+    })
 }
 
 // Показ модального окна
@@ -279,19 +309,21 @@ function addEmployeeModalListener() {
     saveButton.addEventListener('click', async () => {
         const firstName = document.getElementById('firstNameInput').value.trim();
         const lastName = document.getElementById('lastNameInput').value.trim();
-        const storeId = document.getElementById('storeIdInput').value.trim();
+        let store = document.getElementById('store').value;
         const position = document.getElementById('positionInput').value.trim();
         const email = document.getElementById('emailInput').value.trim();
 
-        if (!firstName || !lastName || !storeId || !position || !email) {
+        if (!firstName || !lastName || !position || !email) {
             alert('Пожалуйста, заполните все обязательные поля.');
             return;
         }
 
+        store = JSON.parse(store);
+
         const newEmployee = {
             firstName,
             lastName,
-            storeId,
+            store,
             position,
             email
         };
@@ -314,10 +346,10 @@ function addEmployeeModalListener() {
 
             const addedEmployee = await response.json();
             employees.push(new Employee(
-                addedEmployee.employeeId,
+                addedEmployee.id,
                 addedEmployee.firstName,
                 addedEmployee.lastName,
-                addedEmployee.storeId,
+                addedEmployee.store,
                 addedEmployee.position,
                 addedEmployee.email
             ));
@@ -359,7 +391,7 @@ function addSearchButtonListener(sortBy){
 
 let employees = null;
 (async () => {
-    employees = await getEmployees('employeeId', '0', 'employeeId', 'asc');
+    employees = await getEmployees('id', '0', 'id', 'asc');
     await showEmployees(employees);
     addHeadersListeners();
     await addDeleteButtonListeners('сотрудника', 'employees');
@@ -367,5 +399,5 @@ let employees = null;
     createEmployeeModal();
     addEmployeeModalListener();
     addEmployeeButton();
-    addSearchButtonListener('employeeId');
+    addSearchButtonListener('id');
 })();

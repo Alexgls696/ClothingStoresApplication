@@ -4,6 +4,8 @@ import org.aspectj.weaver.ast.Or;
 import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.Order;
 import org.example.clothingstoresapplication.repository.OrderRepository;
+import org.example.clothingstoresapplication.repository.OrderStatusRepository;
+import org.example.clothingstoresapplication.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,10 +20,14 @@ import java.util.Map;
 @Transactional
 public class OrdersController {
     private OrderRepository orderRepository;
+    private StoreRepository storeRepository;
+    private OrderStatusRepository orderStatusRepository;
 
     @Autowired
-    public OrdersController(OrderRepository orderRepository) {
+    public OrdersController(OrderRepository orderRepository, StoreRepository storeRepository, OrderStatusRepository orderStatusRepository) {
         this.orderRepository = orderRepository;
+        this.storeRepository = storeRepository;
+        this.orderStatusRepository = orderStatusRepository;
     }
 
     @GetMapping
@@ -92,10 +98,10 @@ public class OrdersController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "orderId" -> orderRepository.findAll(pageable(sort));
+            case "id" -> orderRepository.findAll(pageable(sort));
             case "orderDate" -> orderRepository.findAllOrderByOrderDate(pageable(sort));
-            case "storeId" -> orderRepository.findAllByStoreId(Integer.parseInt(findValue), pageable(sort));
-            case "statusId" -> orderRepository.findAllByStatusId(Integer.parseInt(findValue), pageable(sort));
+            case "storeId" -> orderRepository.findAllByStore(storeRepository.findById(Integer.parseInt(findValue)).get(), pageable(sort));
+            case "statusId" -> orderRepository.findAllByStatus(orderStatusRepository.findById(Integer.parseInt(findValue)).get(), pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
     }

@@ -1,11 +1,11 @@
 class Product {
-    constructor(productId, productName, price, categoryId, typeId, supplierId) {
-        this.productId = productId;
-        this.productName = productName;
+    constructor(id, name, price, category, type, supplier) {
+        this.id = id;
+        this.name = name;
         this.price = price;
-        this.categoryId = categoryId;
-        this.typeId = typeId;
-        this.supplierId = supplierId;
+        this.category = category;
+        this.type = type;
+        this.supplier = supplier;
     }
 }
 
@@ -21,12 +21,12 @@ async function getProducts(findBy,findValue,sortBy,sortType) {
         const data = productsData.content;
         return data.map(product => {
             return new Product(
-                product.productId,
-                product.productName,
+                product.id,
+                product.name,
                 product.price,
-                product.categoryId,
-                product.typeId,
-                product.supplierId
+                product.category,
+                product.type,
+                product.supplier
             );
         });
     } catch (error) {
@@ -36,7 +36,7 @@ async function getProducts(findBy,findValue,sortBy,sortType) {
 
 let sortProducts = {
     id: 'asc',
-    productName: 'asc',
+    name: 'asc',
     price: 'asc',
     categoryId: 'asc',
     typeId: 'asc',
@@ -44,12 +44,11 @@ let sortProducts = {
 };
 
 
-const FIND_BY = 'productId';
-let findBy = 'productId';
+const FIND_BY = 'id';
+let findBy = 'id';
 let findValue = 0;
 
 async function showSortedProducts(sortBy,sortType) {
-    console.log(findBy,findValue,sortBy,sortType)
     products = await getProducts(findBy,findValue,sortBy,sortType)
     await showProducts(products);
     addHeadersListeners();
@@ -57,7 +56,7 @@ async function showSortedProducts(sortBy,sortType) {
 
 function addHeadersListeners() {
     const id = document.getElementById('product-id-header');
-    const productName = document.getElementById('product-name-header');
+    const name = document.getElementById('product-name-header');
     const price = document.getElementById('product-price-header');
     const categoryId = document.getElementById('product-categoryId-header');
     const typeId = document.getElementById('product-typeId-header');
@@ -65,12 +64,12 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortProducts.id = sortProducts.id === 'asc' ? 'desc' : 'asc';
-        await showSortedProducts('productId',  sortProducts.id);
+        await showSortedProducts('id',  sortProducts.id);
     });
 
-    productName.addEventListener('click', async () => {
-        sortProducts.productName = sortProducts.productName === 'asc' ? 'desc' : 'asc';
-        await showSortedProducts('productName' , sortProducts.productName);
+    name.addEventListener('click', async () => {
+        sortProducts.name = sortProducts.name === 'asc' ? 'desc' : 'asc';
+        await showSortedProducts('name' , sortProducts.name);
     });
 
     price.addEventListener('click', async () => {
@@ -80,17 +79,17 @@ function addHeadersListeners() {
 
     categoryId.addEventListener('click', async () => {
         sortProducts.categoryId = sortProducts.categoryId === 'asc' ? 'desc' : 'asc';
-        await showSortedProducts('categoryId',  sortProducts.categoryId);
+        await showSortedProducts('categoryName',  sortProducts.categoryId);
     });
 
     typeId.addEventListener('click', async () => {
         sortProducts.typeId = sortProducts.typeId === 'asc' ? 'desc' : 'asc';
-        await showSortedProducts('typeId' , sortProducts.typeId);
+        await showSortedProducts('typeName' , sortProducts.typeId);
     });
 
     supplierId.addEventListener('click', async () => {
         sortProducts.supplierId = sortProducts.supplierId === 'asc' ? 'desc' : 'asc';
-        await showSortedProducts('supplierId' , sortProducts.supplierId);
+        await showSortedProducts('supplierName' , sortProducts.supplierId);
     });
 }
 
@@ -104,9 +103,9 @@ async function showProducts(products) {
                 <th id="product-id-header" class="header">ID</th>
                 <th id="product-name-header" class="header">Название</th>
                 <th id="product-price-header" class="header">Цена</th>
-                <th id="product-categoryId-header" class="header">ID Категории</th>
-                <th id="product-typeId-header" class="header">ID Типа продукта</th>
-                <th id="product-supplierId-header" class="header">ID Производителя</th>
+                <th id="product-categoryId-header" class="header">Категория</th>
+                <th id="product-typeId-header" class="header">Тип продукта</th>
+                <th id="product-supplierId-header" class="header">Производитель</th>
                 ${access ? '<th>Удаление</th>' : ''}
             </tr>
         </thead>`;
@@ -115,20 +114,19 @@ async function showProducts(products) {
     products.forEach(product => {
         tbody.innerHTML += `
             <tr>
-                <td>${product.productId}</td>
-                <td>${product.productName}</td>
+                <td>${product.id}</td>
+                <td>${product.name}</td>
                 <td>${product.price}</td>
-                <td>${product.categoryId}</td>
-                <td>${product.typeId}</td>
-                <td>${product.supplierId}</td>
+                <td>${product.category.name}</td>
+                <td>${product.type.name}</td>
+                <td>${product.supplier.name}</td>
                 ${access ? `<td>
-<button class="btn btn-danger btn-sm delete-button" data-id="${product.productId}">
+<button class="btn btn-danger btn-sm delete-button" data-id="${product.id}">
 Удалить
 </button>
 </td>` : ''}
             </tr>`;
     });
-
     productsTable.appendChild(tbody);
     addRowClickListeners();
 }
@@ -137,7 +135,7 @@ async function showProducts(products) {
 function makeRowEditable(row) {
     const cells = Array.from(row.children);
     cells.forEach((cell, index) => {
-        if (index > 0 && index < 6) { // Пропускаем ID
+        if (index > 0 && index < 3) { // Пропускаем ID
             const input = document.createElement('input');
             input.type = 'text';
             input.value = cell.textContent.trim();
@@ -176,13 +174,13 @@ function collectEditedData() {
     const rows = document.querySelectorAll('#products-table tbody tr.editable');
     const editedData = [];
     rows.forEach(row => {
-        const id = row.children[0].textContent.trim();
-        const productName = row.children[1].querySelector('input').value.trim();
-        const price = row.children[2].querySelector('input').value.trim();
-        const categoryId = row.children[3].querySelector('input').value.trim();
-        const typeId = row.children[4].querySelector('input').value.trim();
-        const supplierId = row.children[5].querySelector('input').value.trim();
-        editedData.push({ productId: id, productName, price, categoryId, typeId, supplierId });
+        let id = parseInt(row.children[0].textContent.trim());
+        const name = row.children[1].querySelector('input').value.trim();
+        let price = row.children[2].querySelector('input').value.trim();
+        let category = products[id].category;
+        let type = products[id].type;
+        const supplier = products[id].supplier;
+        editedData.push({ id: id, name, price, category, type, supplier });
         makeRowReadOnly(row);
     });
     return editedData;
@@ -224,7 +222,78 @@ document.addEventListener('DOMContentLoaded', () => {
     addDeleteAllButton('api/products/deleteAll')
 });
 //--------------------------------------------------------------------------------------
-function createProductModal() {
+
+class Supplier {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+    }
+}
+
+class Category {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+    }
+}
+
+class ProductType {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+    }
+}
+
+async function getCategories(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/categories/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const categoryData = await response.json();
+        const data = categoryData.content;
+        return categoryData.map(category => {
+            return new Category(category.id, category.name);
+        })
+    } catch (error) {
+    }
+}
+
+async function getProductTypes(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/productTypes/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const productTypesData = await response.json();
+        const data = productTypesData.content;
+        return data.map(productType => {
+            return new ProductType(productType.id, productType.name);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function getSuppliers(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/suppliers/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const suppliersData = await response.json();
+        const data = suppliersData.content;
+        return data.map(supplier => {
+            return new Supplier(supplier.id, supplier.name);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+async function createProductModal() {
     const modalHtml = `
     <div class="modal" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog" role="document" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 5px; padding: 20px;">
@@ -238,24 +307,24 @@ function createProductModal() {
                 <div class="modal-body">
                     <form id="addProductForm">
                         <div class="form-group">
-                            <label for="productNameInput">Название продукта</label>
-                            <input type="text" class="form-control" id="productNameInput" required>
+                            <label for="nameInput">Название товара</label>
+                            <input type="text" class="form-control" id="nameInput" required>
                         </div>
                         <div class="form-group">
                             <label for="priceInput">Цена</label>
                             <input type="number" class="form-control" id="priceInput" required>
                         </div>
                         <div class="form-group">
-                            <label for="categoryIdInput">ID категории</label>
-                            <input type="number" class="form-control" id="categoryIdInput" required>
+                         <label for="categoryInput">Категория</label>
+                             <select id="category" class="form-select"></select>
                         </div>
                         <div class="form-group">
-                            <label for="typeIdInput">ID типа</label>
-                            <input type="number" class="form-control" id="typeIdInput" required>
+                         <label for="typeInput">Тип товара</label>
+                            <select id="type" class="form-select"></select>
                         </div>
                         <div class="form-group">
-                            <label for="supplierIdInput">ID поставщика</label>
-                            <input type="number" class="form-control" id="supplierIdInput" required>
+                         <label for="supplierInput">Производитель</label>
+                            <select id="supplier" class="form-select"></select>
                         </div>
                     </form>
                 </div>
@@ -267,6 +336,23 @@ function createProductModal() {
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+    let categories = await getCategories('name','','name','asc');
+    let types = await getProductTypes('name','','name','asc');
+    let suppliers = await getSuppliers('name','','name','asc');
+
+    let categoryContainer = document.getElementById('category');
+    let typeContainer = document.getElementById('type');
+    let supplierContainer = document.getElementById('supplier');
+    categories.forEach(category=>{
+        categoryContainer.innerHTML+=`<option value='${JSON.stringify(category)}'>${category.name}</option>`
+    })
+    types.forEach(type=>{
+        typeContainer.innerHTML+=`<option value='${JSON.stringify(type)}'>${type.name}</option>`
+    })
+    suppliers.forEach(supplier=>{
+        supplierContainer.innerHTML+=`<option value='${JSON.stringify(supplier)}'>${supplier.name}</option>`
+    })
+
 }
 
 function showProductModal() {
@@ -285,23 +371,25 @@ function addProductModalListener() {
     const closeButton = document.getElementById('closeProductModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const productName = document.getElementById('productNameInput').value.trim();
+        const name = document.getElementById('nameInput').value.trim();
         const price = document.getElementById('priceInput').value.trim();
-        const categoryId = document.getElementById('categoryIdInput').value.trim();
-        const typeId = document.getElementById('typeIdInput').value.trim();
-        const supplierId = document.getElementById('supplierIdInput').value.trim();
+        let category = document.getElementById('category').value;
+        let type = document.getElementById('type').value;
+        let supplier = document.getElementById('supplier').value;
 
-        if (!productName || !price || !categoryId || !typeId || !supplierId) {
+        if (!name || !price || !category || !type || !supplier) {
             alert('Пожалуйста, заполните все поля.');
             return;
         }
-
+        category = JSON.parse(category);
+        type = JSON.parse(type);
+        supplier = JSON.parse(supplier);
         const newProduct = {
-            productName,
+            name,
             price,
-            categoryId,
-            typeId,
-            supplierId
+            category,
+            type,
+            supplier
         };
 
         try {
@@ -322,17 +410,17 @@ function addProductModalListener() {
 
             const addedProduct = await response.json();
             products.push(new Product(
-                addedProduct.productId,
-                addedProduct.productName,
+                addedProduct.id,
+                addedProduct.name,
                 addedProduct.price,
-                addedProduct.categoryId,
-                addedProduct.typeId,
-                addedProduct.supplierId
+                addedProduct.category,
+                addedProduct.type,
+                addedProduct.supplier
             ));
 
             await showProducts(products);
             addHeadersListeners();
-            await addDeleteButtonListener('products',productName);
+            await addDeleteButtonListener('products',name);
             hideProductModal();
             document.getElementById('addProductForm').reset();
         } catch (error) {
@@ -357,7 +445,6 @@ function addSearchButtonListener(sortBy){
     document.getElementById('searchButton').addEventListener('click', async function() {
         findBy = document.getElementById('searchField').value;
         findValue = document.getElementById('searchInput').value;
-        console.log(findBy,findValue);
         categories = await getProducts(findBy,findValue,sortBy,'asc');
         await showProducts(categories);
         await addDeleteButtonListeners('товар', 'products');
@@ -366,7 +453,7 @@ function addSearchButtonListener(sortBy){
 }
 
 
-function createProductAndSupplierModal() {
+async function createProductAndSupplierModal() {
     const modalHtml = `
     <div class="modal" id="addProductAndSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addProductAndSupplierModalLabel" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog" role="document" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 5px; padding: 20px;">
@@ -380,24 +467,24 @@ function createProductAndSupplierModal() {
                 <div class="modal-body">
                     <form id="addProductAndSupplierForm">
                         <div class="form-group">
-                            <label for="productNameInput1">Название продукта</label>
-                            <input type="text" class="form-control" id="productNameInput1" required>
+                            <label for="nameInput1">Название продукта</label>
+                            <input type="text" class="form-control" id="nameInput1" required>
                         </div>
                         <div class="form-group">
                             <label for="priceInput1">Цена</label>
                             <input type="number" class="form-control" id="priceInput1" required>
                         </div>
-                        <div class="form-group">
-                            <label for="categoryIdInput1">ID категории</label>
-                            <input type="number" class="form-control" id="categoryIdInput1" required>
+                         <div class="form-group">
+                         <label for="categoryInput">Категория</label>
+                             <select id="category1" class="form-select"></select>
                         </div>
                         <div class="form-group">
-                            <label for="typeIdInput1">ID типа</label>
-                            <input type="number" class="form-control" id="typeIdInput1" required>
+                         <label for="typeInput">Тип товара</label>
+                            <select id="type1" class="form-select"></select>
                         </div>
                         <div class="form-group">
-                            <label for="supplierNameInput1">Название производителя</label>
-                            <input type="text" class="form-control" id="supplierNameInput1" required>
+                            <label for="nameInput1">Название производителя</label>
+                            <input type="text" class="form-control" id="nameInput1" required>
                         </div>
                     </form>
                 </div>
@@ -409,6 +496,18 @@ function createProductAndSupplierModal() {
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+    let categories = await getCategories('name','','name','asc');
+    let types = await getProductTypes('name','','name','asc');
+
+    let categoryContainer = document.getElementById('category1');
+    let typeContainer = document.getElementById('type1');
+
+    categories.forEach(category=>{
+        categoryContainer.innerHTML+=`<option value='${JSON.stringify(category)}'>${category.name}</option>`
+    })
+    types.forEach(type=>{
+        typeContainer.innerHTML+=`<option value='${JSON.stringify(type)}'>${type.name}</option>`
+    })
 }
 
 function showProductAndSupplierModal() {
@@ -427,29 +526,30 @@ function addProductAndSupplierModalListener() {
     const closeButton = document.getElementById('closeProductAndSupplierModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const productName = document.getElementById('productNameInput1').value.trim();
+        const name = document.getElementById('nameInput1').value.trim();
         const price = document.getElementById('priceInput1').value.trim();
-        const categoryId = document.getElementById('categoryIdInput1').value.trim();
-        const typeId = document.getElementById('typeIdInput1').value.trim();
-        const supplierName = document.getElementById('supplierNameInput1').value.trim();
+        let category = document.getElementById('category').value;
+        let type = document.getElementById('type').value;
+        const supplierName = document.getElementById('nameInput1').value.trim();
+        const supplier = new Supplier(0,supplierName);
 
-        if (!productName || !price || !categoryId || !typeId || !supplierName) {
-            console.log(productName,price,categoryId,typeId,supplierName);
+        if (!name || !price || !name) {
             alert('Пожалуйста, заполните все поля.');
             return;
         }
 
+        category = JSON.parse(category);
+        type = JSON.parse(type);
         const newProduct = {
-            productName,
+            name,
             price,
-            categoryId,
-            typeId,
-            supplierName
+            category,
+            type,
+            supplier
         };
 
         try {
-            const response = await fetch(`http://${ip}/api/products/addProductAndCustomer?productName=${productName}
-            &price=${price}&categoryId=${categoryId}&typeId=${typeId}&supplierName=${supplierName}`, {
+            const response = await fetch(`http://${ip}/api/products/addProductAndCustomer`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -471,8 +571,8 @@ function addProductAndSupplierModalListener() {
         }
     });
 
-    cancelButton.addEventListener('click', hideProductModal);
-    closeButton.addEventListener('click', hideProductModal);
+    cancelButton.addEventListener('click', hideProductAndSupplierModal);
+    closeButton.addEventListener('click', hideProductAndSupplierModal);
 }
 
 async function addAddProductAndSupplierNameButton(){
@@ -489,7 +589,7 @@ async function addAddProductAndSupplierNameButton(){
 
 let products = null;
 (async () => {
-    products = await getProducts(findBy,'0','productId','asc');
+    products = await getProducts(findBy,'0','id','asc');
     await showProducts(products);
     addHeadersListeners();
     await addDeleteButtonListeners('товар', 'products');
@@ -503,6 +603,6 @@ let products = null;
 
     addProductButton();
     await addAddProductAndSupplierNameButton();
-    addSearchButtonListener('productId');
+    addSearchButtonListener('id');
 
 })();

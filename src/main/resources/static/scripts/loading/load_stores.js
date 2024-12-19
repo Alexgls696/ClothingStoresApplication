@@ -1,6 +1,6 @@
 class Store {
-    constructor(storeId, location) {
-        this.storeId = storeId;
+    constructor(id, location) {
+        this.id = id;
         this.location = location;
     }
 }
@@ -16,7 +16,7 @@ async function getStores(findBy,findValue,sortBy,sortType) {
         const storesData = await response.json();
         const data = storesData.content;
         return data.map(store => {
-            return new Store(store.storeId, store.location);
+            return new Store(store.id, store.location);
         });
     } catch (error) {
         console.log(error);
@@ -28,8 +28,8 @@ let sortStores = {
     location: 'asc',
 };
 
-const FIND_BY = 'storeId';
-let findBy = 'storeId';
+const FIND_BY = 'id';
+let findBy = 'id';
 let findValue = 0;
 
 async function showSortedStores(sortBy,sortType) {
@@ -44,7 +44,7 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortStores.id = sortStores.id === 'asc' ? 'desc' : 'asc';
-        await showSortedStores('storeId' , sortStores.id);
+        await showSortedStores('id' , sortStores.id);
     });
 
     location.addEventListener('click', async () => {
@@ -70,10 +70,10 @@ async function showStores(stores) {
     stores.forEach(store => {
         tbody.innerHTML += `
             <tr>
-                <td>${store.storeId}</td>
+                <td>${store.id}</td>
                 <td>${store.location}</td>
                 ${access ? `<td>
-                <button class="btn btn-danger btn-sm delete-button" data-id="${store.storeId}">
+                <button class="btn btn-danger btn-sm delete-button" data-id="${store.id}">
                     Удалить
                 </button>
                 </td>` : ''}
@@ -129,7 +129,7 @@ function collectEditedData() {
     rows.forEach(row => {
         const id = row.children[0].textContent.trim();
         const location = row.children[1].querySelector('input').value.trim();
-        editedData.push({ storeId: id, location });
+        editedData.push({ id: id, location });
         makeRowReadOnly(row);
     });
     return editedData;
@@ -243,7 +243,7 @@ function addStoreModalListener() {
             }
 
             const addedStore = await response.json();
-            stores.push(new Store(addedStore.storeId, addedStore.location));
+            stores.push(new Store(addedStore.id, addedStore.location));
 
             await showStores(stores);
             addHeadersListeners();
@@ -281,7 +281,7 @@ function addSearchButtonListener(sortBy){
 
 let stores = null;
 (async () => {
-    stores = await getStores(findBy, '0', 'storeId', 'asc');
+    stores = await getStores(findBy, '0', 'id', 'asc');
     await showStores(stores);
     addHeadersListeners();
     await addDeleteButtonListeners('магазин','stores');
@@ -289,5 +289,5 @@ let stores = null;
     createStoreModal();
     addStoreModalListener();
     addStoreButton();
-    addSearchButtonListener('storeId');
+    addSearchButtonListener('id');
 })();

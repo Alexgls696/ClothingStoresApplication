@@ -5,6 +5,7 @@ import org.example.clothingstoresapplication.entity.Customer;
 import org.example.clothingstoresapplication.entity.Employee;
 import org.example.clothingstoresapplication.repository.CustomersRepository;
 import org.example.clothingstoresapplication.repository.EmployeeRepository;
+import org.example.clothingstoresapplication.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,10 +20,12 @@ import java.util.Map;
 @Transactional
 public class EmployeesController {
     private EmployeeRepository employeeRepository;
+    private StoreRepository storeRepository;
 
     @Autowired
-    public EmployeesController(EmployeeRepository employeeRepository) {
+    public EmployeesController(EmployeeRepository employeeRepository, StoreRepository storeRepository) {
         this.employeeRepository = employeeRepository;
+        this.storeRepository = storeRepository;
     }
 
     @GetMapping
@@ -106,11 +109,11 @@ public class EmployeesController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "employeeId" -> employeeRepository.findAll(pageable(sort));
+            case "id" -> employeeRepository.findAll(pageable(sort));
             case "firstName" -> employeeRepository.findAllByFirstNameLikeIgnoreCase(findValue + "%", pageable(sort));
             case "lastName" -> employeeRepository.findAllByLastNameLikeIgnoreCase(findValue + "%", pageable(sort));
             case "email" -> employeeRepository.findAllByEmailLikeIgnoreCase(findValue + "%", pageable(sort));
-            case "storeId" -> employeeRepository.findAllByStoreId(Integer.parseInt(findValue), pageable(sort));
+            case "storeId" -> employeeRepository.findAllByStore(storeRepository.findById(Integer.parseInt(findValue)).get(), pageable(sort));
             case "position" -> employeeRepository.findAllByPositionLikeIgnoreCase(findValue + "%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };

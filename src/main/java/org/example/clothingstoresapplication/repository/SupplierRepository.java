@@ -19,6 +19,6 @@ public interface SupplierRepository extends CrudRepository<Supplier, Integer> {
     @Query(value = "from Supplier ")
     Page<Supplier> findAllOrderBySupplierName(Pageable pageable);
 
-    Page<Supplier>findAllBySupplierId(Integer id, Pageable pageable);
-    Page<Supplier>findAllBySupplierNameLikeIgnoreCase(String name, Pageable pageable);
+    Page<Supplier>findAllById(Integer id, Pageable pageable);
+    Page<Supplier>findAllByNameLikeIgnoreCase(String name, Pageable pageable);
 }

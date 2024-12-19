@@ -1,6 +1,6 @@
 class Order {
-    constructor(orderId, orderDate, storeId, statusId) {
-        this.orderId = orderId;
+    constructor(id, orderDate, storeId, statusId) {
+        this.id = id;
         this.orderDate = orderDate;
         this.storeId = storeId;
         this.statusId = statusId;
@@ -18,7 +18,7 @@ async function getOrders(findBy,findValue,sortBy,sortType) {
         const ordersData = await response.json();
         const data = ordersData.content;
         return data.map(order => {
-            return new Order(order.orderId, order.orderDate, order.storeId, order.statusId);
+            return new Order(order.id, order.orderDate, order.storeId, order.statusId);
         });
     } catch (error) {
         console.log(error);
@@ -43,12 +43,12 @@ async function showOrders(orders) {
     let tbody = document.createElement('tbody');
     orders.forEach(order => {
         tbody.innerHTML += `<tr>
-<td>${order.orderId}</td>
+<td>${order.id}</td>
 <td>${order.orderDate}</td>
 <td>${order.storeId}</td>
 <td>${order.statusId}</td>
 ${access ? `<td>
-<button class="btn btn-danger btn-sm delete-button" data-id="${order.orderId}">
+<button class="btn btn-danger btn-sm delete-button" data-id="${order.id}">
 Удалить
 </button>
 </td>` : ''}
@@ -66,8 +66,8 @@ let sortOrders = {
     statusId: 'asc'
 };
 
-const FIND_BY = 'orderId';
-let findBy = 'orderId';
+const FIND_BY = 'id';
+let findBy = 'id';
 let findValue = 0;
 
 async function showSortedOrders(sortBy,sortType) {
@@ -84,7 +84,7 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortOrders.id = sortOrders.id === 'asc' ? 'desc' : 'asc';
-        await showSortedOrders('orderId' , sortOrders.id);
+        await showSortedOrders('id' , sortOrders.id);
     });
 
     date.addEventListener('click', async () => {
@@ -150,7 +150,7 @@ function collectEditedData() {
         const orderDate = row.children[1].querySelector('input').value.trim();
         const storeId = row.children[2].querySelector('input').value.trim();
         const statusId = row.children[3].querySelector('input').value.trim();
-        editedData.push({orderId: id, orderDate, storeId, statusId});
+        editedData.push({id: id, orderDate, storeId, statusId});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -280,7 +280,7 @@ function addOrderModalListener() {
 
             const addedOrder = await response.json();
             orders.push(new Order(
-                addedOrder.orderId,
+                addedOrder.id,
                 addedOrder.orderDate,
                 addedOrder.storeId,
                 addedOrder.statusId
@@ -322,7 +322,7 @@ function addSearchButtonListener(sortBy){
 
 let orders = null;
 (async () => {
-    orders = await getOrders(findBy,'0','orderId','asc');
+    orders = await getOrders(findBy,'0','id','asc');
     await showOrders(orders);
     addHeadersListeners();
     await addDeleteButtonListeners('заказ', 'orders');
@@ -330,5 +330,5 @@ let orders = null;
     createOrderModal();
     addOrderModalListener();
     addOrderButton();
-    addSearchButtonListener('orderId');
+    addSearchButtonListener('id');
 })();

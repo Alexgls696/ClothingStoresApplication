@@ -1,7 +1,7 @@
 class ProductType {
-    constructor(typeId, typeName) {
-        this.typeId = typeId;
-        this.typeName = typeName;
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
     }
 }
 
@@ -16,7 +16,7 @@ async function getProductTypes(findBy,findValue,sortBy,sortType) {
         const productTypesData = await response.json();
         const data = productTypesData.content;
         return data.map(productType => {
-            return new ProductType(productType.typeId, productType.typeName);
+            return new ProductType(productType.id, productType.name);
         });
     } catch (error) {
         console.log(error);
@@ -36,10 +36,10 @@ async function showProductTypes(productTypes) {
     let tbody = document.createElement('tbody');
     productTypes.forEach(productType => {
         tbody.innerHTML += `<tr>
-<td>${productType.typeId}</td>
-<td>${productType.typeName}</td>
+<td>${productType.id}</td>
+<td>${productType.name}</td>
 ${access ? `<td>
-<button class="btn btn-danger btn-sm delete-button" data-id="${productType.typeId}">
+<button class="btn btn-danger btn-sm delete-button" data-id="${productType.id}">
 Удалить
 </button>
 </td>` : ''}
@@ -53,11 +53,11 @@ ${access ? `<td>
 
 let sortProductTypes = {
     id: 'asc',
-    typeName: 'asc'
+    name: 'asc'
 };
 
-const FIND_BY = 'typeId';
-let findBy = 'typeId';
+const FIND_BY = 'id';
+let findBy = 'id';
 let findValue = 0;
 
 async function showSortedProductTypes(sortBy,sortType) {
@@ -68,16 +68,16 @@ async function showSortedProductTypes(sortBy,sortType) {
 
 function addHeadersListeners() {
     const id = document.getElementById('product-type-id-header');
-    const typeName = document.getElementById('product-type-type-name-header');
+    const name = document.getElementById('product-type-type-name-header');
 
     id.addEventListener('click', async () => {
         sortProductTypes.id = sortProductTypes.id === 'asc' ? 'desc' : 'asc';
-        await showSortedProductTypes('typeId' , sortProductTypes.id);
+        await showSortedProductTypes('id' , sortProductTypes.id);
     });
 
-    typeName.addEventListener('click', async () => {
-        sortProductTypes.typeName = sortProductTypes.typeName === 'asc' ? 'desc' : 'asc';
-        await showSortedProductTypes('typeName' , sortProductTypes.typeName);
+    name.addEventListener('click', async () => {
+        sortProductTypes.name = sortProductTypes.name === 'asc' ? 'desc' : 'asc';
+        await showSortedProductTypes('name' , sortProductTypes.name);
     });
 }
 
@@ -125,8 +125,8 @@ function collectEditedData() {
     const editedData = [];
     rows.forEach(row => {
         const id = row.children[0].textContent.trim();
-        const typeName = row.children[1].querySelector('input').value.trim();
-        editedData.push({ typeId: id, typeName });
+        const name = row.children[1].querySelector('input').value.trim();
+        editedData.push({ id: id, name });
         makeRowReadOnly(row);
     });
     return editedData;
@@ -183,8 +183,8 @@ function createProductTypeModal() {
                 <div class="modal-body">
                     <form id="addProductTypeForm">
                         <div class="form-group">
-                            <label for="typeNameInput">Название типа</label>
-                            <input type="text" class="form-control" id="typeNameInput" required>
+                            <label for="nameInput">Название типа</label>
+                            <input type="text" class="form-control" id="nameInput" required>
                         </div>
                     </form>
                 </div>
@@ -214,15 +214,15 @@ function addProductTypeModalListener() {
     const closeButton = document.getElementById('closeProductTypeModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const typeName = document.getElementById('typeNameInput').value.trim();
+        const name = document.getElementById('nameInput').value.trim();
 
-        if (!typeName) {
+        if (!name) {
             alert('Пожалуйста, заполните название типа.');
             return;
         }
 
         const newProductType = {
-            typeName
+            name
         };
 
         try {
@@ -244,13 +244,13 @@ function addProductTypeModalListener() {
 
             const addedProductType = await response.json();
             productTypes.push(new ProductType(
-                addedProductType.typeId,
-                addedProductType.typeName
+                addedProductType.id,
+                addedProductType.name
             ));
 
             await showProductTypes(productTypes);
             addHeadersListeners();
-            await addDeleteButtonListener('productTypes',typeName);
+            await addDeleteButtonListener('productTypes',name);
             hideProductTypeModal();
             document.getElementById('addProductTypeForm').reset();
         } catch (error) {
@@ -284,7 +284,7 @@ function addSearchButtonListener(sortBy){
 
 let productTypes = null;
 (async () => {
-    productTypes = await getProductTypes(findBy, '0', 'typeId', 'asc');
+    productTypes = await getProductTypes(findBy, '0', 'id', 'asc');
     await showProductTypes(productTypes);
     addHeadersListeners();
     await addDeleteButtonListeners('тип товара', 'productTypes');
@@ -292,5 +292,5 @@ let productTypes = null;
     createProductTypeModal();
     addProductTypeModalListener();
     addProductTypeButton();
-    addSearchButtonListener('typeId');
+    addSearchButtonListener('id');
 })();

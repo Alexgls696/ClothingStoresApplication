@@ -17,12 +17,17 @@ public class Order {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "order_id")
-  private int orderId;
+  private int id;
   @DateTimeFormat
   @Column(name = "order_date")
-  private java.sql.Date orderDate;
-  @Column(name = "store_id")
-  private Integer storeId;
-  @Column(name = "status_id")
-  private Integer statusId;
+  private java.sql.Date date;
+
+  @JoinColumn(name = "store_id")
+  @OneToOne(fetch = FetchType.EAGER)
+  private Store store;
+
+  @JoinColumn(name = "status_id")
+  @OneToOne(fetch = FetchType.EAGER)
+  private OrderStatus status;
+
 }

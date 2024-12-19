@@ -1,6 +1,8 @@
 package org.example.clothingstoresapplication.repository;
 
+import org.example.clothingstoresapplication.entity.Order;
 import org.example.clothingstoresapplication.entity.OrderProduct;
+import org.example.clothingstoresapplication.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -26,8 +28,8 @@ public interface OrderProductRepository extends CrudRepository<OrderProduct, Int
     @Query(value = "from OrderProduct ")
     Page<OrderProduct> findAllOrderByCount(Pageable pageable);
 
-    List<OrderProduct> findAllByOrderProductId(int id, Pageable pageable);
     List<OrderProduct> findAllByOrderId(int id, Pageable pageable);
-    List<OrderProduct> findAllByProductId(int id, Pageable pageable);
+    List<OrderProduct> findAllByOrder(Order order, Pageable pageable);
+    List<OrderProduct> findAllByProduct(Product product, Pageable pageable);
     List<OrderProduct> findAllByCount(int count, Pageable pageable);
 }

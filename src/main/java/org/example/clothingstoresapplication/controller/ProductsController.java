@@ -1,14 +1,16 @@
 package org.example.clothingstoresapplication.controller;
 
+import com.google.gson.Gson;
 import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.OrderStatus;
 import org.example.clothingstoresapplication.entity.Product;
-import org.example.clothingstoresapplication.repository.OrderStatusRepository;
-import org.example.clothingstoresapplication.repository.ProductRepository;
+import org.example.clothingstoresapplication.entity.ProductsType;
+import org.example.clothingstoresapplication.repository.*;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +26,18 @@ import java.util.Map;
 @Transactional
 public class ProductsController {
     private ProductRepository productRepository;
+    private CategoriesRepository categoriesRepository;
+    private ProductsTypeRepository productsTypeRepository;
+    private SupplierRepository supplierRepository;
+
 
     @Autowired
-    public  ProductsController(ProductRepository productRepository) {
+    public  ProductsController(ProductRepository productRepository,CategoriesRepository categoriesRepository,
+                               ProductsTypeRepository productsTypeRepository, SupplierRepository supplierRepository) {
         this.productRepository = productRepository;
+        this.categoriesRepository = categoriesRepository;
+        this.productsTypeRepository = productsTypeRepository;
+        this.supplierRepository = supplierRepository;
     }
 
     @Autowired
@@ -45,7 +55,7 @@ public class ProductsController {
 
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
-        productRepository.saveByParams(product.getProductName(),product.getPrice(),product.getCategoryId(),product.getTypeId(),product.getSupplierId());
+        productRepository.saveByParams(product.getName(),product.getPrice(),(int)product.getCategory().getId(),product.getType().getId(),product.getSupplier().getId());
         return product;
         //return productRepository.save(product);
     }
@@ -53,12 +63,12 @@ public class ProductsController {
     @PostMapping("updateAllByParams")
     public void updateAllByParams(@RequestBody List<Product> products) {
         for(var it:products){
-            productRepository.updateByParams(it.getProductId(),
-                    it.getProductName(),
+            productRepository.updateByParams(it.getId(),
+                    it.getName(),
                     it.getPrice(),
-                    it.getCategoryId(),
-                    it.getTypeId(),
-                    it.getSupplierId());
+                    (int)it.getCategory().getId(),
+                    it.getType().getId(),
+                    it.getSupplier().getId());
         }
     }
 
@@ -73,13 +83,13 @@ public class ProductsController {
     }
 
     @PostMapping("/addProductAndCustomer")
-    public void addProductAndCustomer(@RequestBody Map<String,String>params) {
-        String productName = params.get("productName");
-        Double price = Double.valueOf(params.get("price"));
-        int categoryId = Integer.parseInt(params.get("categoryId"));
-        int typeId = Integer.parseInt(params.get("typeId"));
-        String supplierName = params.get("supplierName");
-        productRepository.addProductAndSupplier(productName,price,categoryId,typeId,supplierName);
+    public void addProductAndCustomer(@RequestBody Product product) {
+
+        productRepository.addProductAndSupplier(product.getName(),
+                product.getPrice(),
+                (int)product.getCategory().getId(),
+                product.getType().getId(),
+                product.getSupplier().getName());
     }
 
     @DeleteMapping("/{id}")
@@ -137,11 +147,11 @@ public class ProductsController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "productId" -> productRepository.findAll(pageable(sort));
-            case "productName" -> productRepository.findAllByProductNameLikeIgnoreCase(findValue+"%", pageable(sort));
-            case "categoryId" -> productRepository.findAllByCategoryId(Integer.parseInt(findValue), pageable(sort));
-            case "typeId" -> productRepository.findAllByTypeId(Integer.parseInt(findValue), pageable(sort));
-            case "supplierId" -> productRepository.findAllBySupplierId(Integer.parseInt(findValue), pageable(sort));
+            case "id" -> productRepository.findAll(pageable(sort));
+            case "productName" -> productRepository.findAllByNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "categoryName" -> productRepository.findAllByCategoryNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "typeName" -> productRepository.findAllByTypeNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "supplierName" -> productRepository.findAllBySupplierNameLikeIgnoreCase(findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
     }

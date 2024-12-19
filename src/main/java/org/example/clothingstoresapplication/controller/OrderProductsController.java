@@ -5,6 +5,7 @@ import org.example.clothingstoresapplication.entity.Order;
 import org.example.clothingstoresapplication.entity.OrderProduct;
 import org.example.clothingstoresapplication.repository.OrderProductRepository;
 import org.example.clothingstoresapplication.repository.OrderRepository;
+import org.example.clothingstoresapplication.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,10 +20,14 @@ import java.util.Map;
 @Transactional
 public class OrderProductsController {
     private OrderProductRepository orderProductRepository;
+    private OrderRepository orderRepository;
+    private ProductRepository productRepository;
 
     @Autowired
-    public  OrderProductsController(OrderProductRepository orderProductRepository) {
+    public  OrderProductsController(OrderProductRepository orderProductRepository, OrderRepository orderRepository, ProductRepository productRepository) {
         this.orderProductRepository = orderProductRepository;
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
     }
 
     @GetMapping
@@ -93,9 +98,9 @@ public class OrderProductsController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "orderProductId" -> orderProductRepository.findAll(pageable(sort));
-            case "productId" -> orderProductRepository.findAllByProductId(Integer.parseInt(findValue), pageable(sort));
-            case "orderId" -> orderProductRepository.findAllByOrderId(Integer.parseInt(findValue), pageable(sort));
+            case "id" -> orderProductRepository.findAll(pageable(sort));
+            case "productId" -> orderProductRepository.findAllByProduct(productRepository.findById(Integer.parseInt(findValue)).get(), pageable(sort));
+            case "orderId" -> orderProductRepository.findAllByOrder(orderRepository.findById(Integer.parseInt(findValue)).get(), pageable(sort));
             case "count" -> orderProductRepository.findAllByCount(Integer.parseInt(findValue), pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };

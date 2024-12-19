@@ -1,9 +1,6 @@
 package org.example.clothingstoresapplication.repository;
 
-import org.example.clothingstoresapplication.entity.Category;
-import org.example.clothingstoresapplication.entity.Customer;
-import org.example.clothingstoresapplication.entity.Employee;
-import org.example.clothingstoresapplication.entity.Product;
+import org.example.clothingstoresapplication.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -35,11 +32,11 @@ public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
     @Query(value = "from Employee ")
     Page<Employee> findAllOrderByEmail(Pageable pageable);
 
-    Page<Employee> findAllByEmployeeId(int id,Pageable pageable);
+    Page<Employee> findAllById(int id,Pageable pageable);
 
     Page<Employee> findAllByEmailLikeIgnoreCase(String email,Pageable pageable);
     Page<Employee> findAllByFirstNameLikeIgnoreCase(String firstName,Pageable pageable);
     Page<Employee> findAllByLastNameLikeIgnoreCase(String lastName,Pageable pageable);
-    Page<Employee> findAllByStoreId(int storeId,Pageable pageable);
+    Page<Employee> findAllByStore(Store store, Pageable pageable);
     Page<Employee> findAllByPositionLikeIgnoreCase(String position,Pageable pageable);
 }

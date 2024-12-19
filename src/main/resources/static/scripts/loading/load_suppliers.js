@@ -1,7 +1,7 @@
 class Supplier {
-    constructor(supplierId, supplierName) {
-        this.supplierId = supplierId;
-        this.supplierName = supplierName;
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
     }
 }
 
@@ -16,7 +16,7 @@ async function getSuppliers(findBy,findValue,sortBy,sortType) {
         const suppliersData = await response.json();
         const data = suppliersData.content;
         return data.map(supplier => {
-            return new Supplier(supplier.supplierId, supplier.supplierName);
+            return new Supplier(supplier.id, supplier.name);
         });
     } catch (error) {
         console.log(error);
@@ -28,8 +28,8 @@ let sortSuppliers = {
     name: 'asc',
 };
 
-const FIND_BY = 'supplierId';
-let findBy = 'supplierId';
+const FIND_BY = 'id';
+let findBy = 'id';
 let findValue = 0;
 
 async function showSortedSuppliers(sortBy,sortType) {
@@ -44,12 +44,12 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortSuppliers.id = sortSuppliers.id === 'asc' ? 'desc' : 'asc';
-        await showSortedSuppliers('supplierId',  sortSuppliers.id);
+        await showSortedSuppliers('id',  sortSuppliers.id);
     });
 
     name.addEventListener('click', async () => {
         sortSuppliers.name = sortSuppliers.name === 'asc' ? 'desc' : 'asc';
-        await showSortedSuppliers('supplierName' , sortSuppliers.name);
+        await showSortedSuppliers('name' , sortSuppliers.name);
     });
 }
 
@@ -70,10 +70,10 @@ async function showSuppliers(suppliers) {
     suppliers.forEach(supplier => {
         tbody.innerHTML += `
             <tr>
-                <td>${supplier.supplierId}</td>
-                <td>${supplier.supplierName}</td>
+                <td>${supplier.id}</td>
+                <td>${supplier.name}</td>
                 ${access ? `<td>
-                 <button class="btn btn-danger btn-sm delete-button" data-id="${supplier.supplierId}">
+                 <button class="btn btn-danger btn-sm delete-button" data-id="${supplier.id}">
                     Удалить
                 </button>
                 </td>` : ''}
@@ -129,7 +129,7 @@ function collectEditedData() {
     rows.forEach(row => {
         const id = row.children[0].textContent.trim();
         const name = row.children[1].querySelector('input').value.trim();
-        editedData.push({ supplierId: id, supplierName: name });
+        editedData.push({ id: id, name: name });
         makeRowReadOnly(row);
     });
     return editedData;
@@ -186,8 +186,8 @@ function createSupplierModal() {
                 <div class="modal-body">
                     <form id="addSupplierForm">
                         <div class="form-group">
-                            <label for="supplierNameInput">Название поставщика</label>
-                            <input type="text" class="form-control" id="supplierNameInput" required>
+                            <label for="nameInput">Название поставщика</label>
+                            <input type="text" class="form-control" id="nameInput" required>
                         </div>
                     </form>
                 </div>
@@ -217,15 +217,15 @@ function addSupplierModalListener() {
     const closeButton = document.getElementById('closeSupplierModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const supplierName = document.getElementById('supplierNameInput').value.trim();
+        const name = document.getElementById('nameInput').value.trim();
 
-        if (!supplierName) {
+        if (!name) {
             alert('Пожалуйста, заполните все поля.');
             return;
         }
 
         const newSupplier = {
-            supplierName
+            name
         };
 
         try {
@@ -245,11 +245,11 @@ function addSupplierModalListener() {
             }
 
             const addedSupplier = await response.json();
-            suppliers.push(new Supplier(addedSupplier.supplierId, addedSupplier.supplierName));
+            suppliers.push(new Supplier(addedSupplier.id, addedSupplier.name));
 
             await showSuppliers(suppliers);
             addHeadersListeners();
-            await addDeleteButtonListener('suppliers',supplierName);
+            await addDeleteButtonListener('suppliers',name);
             hideSupplierModal();
             document.getElementById('addSupplierForm').reset();
         } catch (error) {
@@ -282,7 +282,7 @@ function addSearchButtonListener(sortBy){
 
 let suppliers = null;
 (async () => {
-    suppliers = await getSuppliers(findBy, '0', 'supplierId', 'asc');
+    suppliers = await getSuppliers(findBy, '0', 'id', 'asc');
     await showSuppliers(suppliers);
     addHeadersListeners();
     await addDeleteButtonListeners('производителя','suppliers');
@@ -290,5 +290,5 @@ let suppliers = null;
     createSupplierModal();
     addSupplierModalListener();
     addSupplierButton();
-    addSearchButtonListener('supplierId');
+    addSearchButtonListener('id');
 })();

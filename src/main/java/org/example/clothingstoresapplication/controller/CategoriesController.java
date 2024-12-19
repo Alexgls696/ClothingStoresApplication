@@ -63,17 +63,6 @@ public class CategoriesController {
         return Pageable.unpaged(sort);
     }
 
-    @GetMapping("orderById/{type}")
-    public Iterable<Category> getCategoriesById(@PathVariable("type") String type){
-        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"categoryId");
-        return categoriesRepository.findAllOrderById(pageable(sort));
-    }
-
-    @GetMapping("orderByName/{type}")
-    public Iterable<Category> getCategoriesByName(@PathVariable("type") String type){
-        Sort sort = Sort.by(type.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,"categoryName");
-        return categoriesRepository.findAllOrderByCategoryName(pageable(sort));
-    }
 
     /*@GetMapping("/findBy")
     public Iterable<Category> getCategoriesBy(@RequestParam Map<String, String> parameters) {
@@ -100,14 +89,14 @@ public class CategoriesController {
         String findValue = parameters.get("findValue");
 
         sortBy = switch (sortBy){
-            case "categoryName" -> "category_name";
-            case "categoryId" -> "category_id";
+            case "name" -> "category_name";
+            case "id" -> "category_id";
             default -> null;
         };
 
         findBy = switch (findBy){
-            case "categoryName" -> "category_name";
-            case "categoryId" -> "category_id";
+            case "name" -> "category_name";
+            case "id" -> "category_id";
             default -> null;
         };
         var result = categoriesRepository.findAllCategoriesByParams(findBy,findValue,sortBy,sortType);

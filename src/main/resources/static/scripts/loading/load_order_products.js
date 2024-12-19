@@ -1,6 +1,6 @@
 class OrderProduct {
-    constructor(orderProductId, productId, orderId, count) {
-        this.orderProductId = orderProductId;
+    constructor(id, productId, orderId, count) {
+        this.id = id;
         this.productId = productId;
         this.orderId = orderId;
         this.count = count;
@@ -18,7 +18,7 @@ async function getOrderProducts(findBy,findValue,sortBy,sortType) {
         const orderProductsData = await response.json();
         const data = orderProductsData.content;
         return data.map(orderProduct => {
-            return new OrderProduct(orderProduct.orderProductId,
+            return new OrderProduct(orderProduct.id,
                 orderProduct.productId,
                 orderProduct.orderId,
                 orderProduct.count);
@@ -28,9 +28,9 @@ async function getOrderProducts(findBy,findValue,sortBy,sortType) {
     }
 }
 
-const FIND_BY = 'orderProductId';
+const FIND_BY = 'id';
 
-let findBy = 'orderProductId';
+let findBy = 'id';
 let findValue = 0;
 
 let sortOrderProducts = {
@@ -55,12 +55,12 @@ async function showOrderProducts(orderProducts) {
     let tbody = document.createElement('tbody');
     orderProducts.forEach(orderProduct => {
         tbody.innerHTML += `<tr>
-<td>${orderProduct.orderProductId}</td>
+<td>${orderProduct.id}</td>
 <td>${orderProduct.productId}</td>
 <td>${orderProduct.orderId}</td>
 <td>${orderProduct.count}</td>
 ${access ? `<td>
-<button class="btn btn-danger btn-sm delete-button" data-id="${orderProduct.orderProductId}">
+<button class="btn btn-danger btn-sm delete-button" data-id="${orderProduct.id}">
 Удалить
 </button>
 </td>` : ''}
@@ -85,7 +85,7 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortOrderProducts.id = sortOrderProducts.id === 'asc' ? 'desc' : 'asc';
-        await showSortedOrderProducts('orderProductId' , sortOrderProducts.id);
+        await showSortedOrderProducts('id' , sortOrderProducts.id);
     });
 
     productId.addEventListener('click', async () => {
@@ -151,7 +151,7 @@ function collectEditedData() {
         const productId = row.children[1].querySelector('input').value.trim();
         const orderId = row.children[2].querySelector('input').value.trim();
         const count = row.children[3].querySelector('input').value.trim();
-        editedData.push({ orderProductId: id, productId, orderId, count });
+        editedData.push({ id: id, productId, orderId, count });
         makeRowReadOnly(row);
     });
     return editedData;
@@ -282,7 +282,7 @@ function addOrderProductModalListener() {
 
             const addedOrderProduct = await response.json();
             orderProducts.push(new OrderProduct(
-                addedOrderProduct.orderProductId,
+                addedOrderProduct.id,
                 addedOrderProduct.productId,
                 addedOrderProduct.orderId,
                 addedOrderProduct.count
@@ -324,7 +324,7 @@ function addSearchButtonListener(sortBy){
 
 let orderProducts = null;
 (async () => {
-    orderProducts = await getOrderProducts(findBy,'0','orderProductId','asc');
+    orderProducts = await getOrderProducts(findBy,'0','id','asc');
     await showOrderProducts(orderProducts);
     addHeadersListeners();
     await addDeleteButtonListeners('товар-заказ', 'orderProducts');
@@ -332,5 +332,5 @@ let orderProducts = null;
     createOrderProductModal();
     addOrderProductModalListener();
     addOrderProductButton();
-    addSearchButtonListener('orderProductId');
+    addSearchButtonListener('id');
 })();

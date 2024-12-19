@@ -22,6 +22,6 @@ public interface OrderStatusRepository extends CrudRepository<OrderStatus, Integ
     @Query(value = "from OrderStatus ")
     Page<OrderStatus> findAllOrderByName(Pageable pageable);
 
-    Page<OrderStatus>findAllByStatusId(Integer id, Pageable pageable);
-    Page<OrderStatus>findAllByStatusNameLikeIgnoreCase(String name, Pageable pageable);
+    Page<OrderStatus>findAllById(Integer id, Pageable pageable);
+    Page<OrderStatus>findAllByNameLikeIgnoreCase(String name, Pageable pageable);
 }

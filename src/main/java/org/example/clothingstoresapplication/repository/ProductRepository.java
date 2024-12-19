@@ -1,6 +1,9 @@
 package org.example.clothingstoresapplication.repository;
 
+import org.example.clothingstoresapplication.entity.Category;
 import org.example.clothingstoresapplication.entity.Product;
+import org.example.clothingstoresapplication.entity.ProductsType;
+import org.example.clothingstoresapplication.entity.Supplier;
 import org.hibernate.type.descriptor.jdbc.NumericJdbcType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,10 +64,10 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
     @Query(value = "from Product ")
     Page<Product> findAllOrderBySupplierId(Pageable pageable);
 
-    Page<Product>findAllByProductId(int productId, Pageable pageable);
-    Page<Product>findAllByCategoryId(int categoryId, Pageable pageable);
-    Page<Product>findAllByTypeId(int typeId, Pageable pageable);
-    Page<Product>findAllBySupplierId(int supplierId, Pageable pageable);
-    Page<Product>findAllByProductNameLikeIgnoreCase(String productName, Pageable pageable);
+    Page<Product>findAllById(int productId, Pageable pageable);
+    Page<Product>findAllByCategoryNameLikeIgnoreCase(String name, Pageable pageable);
+    Page<Product>findAllByTypeNameLikeIgnoreCase(String name, Pageable pageable);
+    Page<Product>findAllBySupplierNameLikeIgnoreCase(String name, Pageable pageable);
+    Page<Product>findAllByNameLikeIgnoreCase(String productName, Pageable pageable);
     Page<Product>findAllByPrice(double price, Pageable pageable);
 }

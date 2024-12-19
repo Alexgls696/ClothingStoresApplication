@@ -79,7 +79,7 @@ public class StoreController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "storeId" -> storeRepository.findAll(pageable(sort));
+            case "id" -> storeRepository.findAll(pageable(sort));
             case "location" -> storeRepository.findAllByLocationLikeIgnoreCase("%"+findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };

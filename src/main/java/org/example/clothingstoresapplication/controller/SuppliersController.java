@@ -75,8 +75,8 @@ public class SuppliersController {
         String findValue = parameters.get("findValue");
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
         return switch (findBy) {
-            case "supplierId" -> supplierRepository.findAll(pageable(sort));
-            case "supplierName" -> supplierRepository.findAllBySupplierNameLikeIgnoreCase(findValue, pageable(sort));
+            case "id" -> supplierRepository.findAll(pageable(sort));
+            case "name" -> supplierRepository.findAllByNameLikeIgnoreCase(findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
     }

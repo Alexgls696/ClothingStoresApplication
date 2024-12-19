@@ -1,6 +1,6 @@
 class Customer {
-    constructor(customerId, firstName, lastName, email, phoneNumber, orderId) {
-        this.customerId = customerId;
+    constructor(id, firstName, lastName, email, phoneNumber, orderId) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -21,7 +21,7 @@ async function getCustomers(findBy, findValue, sortBy, sortType) {
         const data = customersData.content;
         return data.map(customer => {
             return new Customer(
-                customer.customerId,
+                customer.id,
                 customer.firstName,
                 customer.lastName,
                 customer.email,
@@ -55,14 +55,14 @@ async function showCustomers(customers) {
     customers.forEach(customer => {
         tbody.innerHTML += `
             <tr>
-                <td>${customer.customerId}</td>
+                <td>${customer.id}</td>
                 <td>${customer.firstName}</td>
                 <td>${customer.lastName}</td>
                 <td>${customer.email}</td>
                 <td>${customer.phoneNumber}</td>
                 <td>${customer.orderId}</td>
                 ${access ? `<td>
-                <button class="btn btn-danger btn-sm delete-button" data-id="${customer.customerId}">
+                <button class="btn btn-danger btn-sm delete-button" data-id="${customer.id}">
                     Удалить
                 </button>
             </td>` : ''}
@@ -103,7 +103,7 @@ function addHeadersListeners() {
 
     id.addEventListener('click', async () => {
         sortCustomers.id = sortCustomers.id === 'asc' ? 'desc' : 'asc';
-        await showSortedCustomers('customerId', sortCustomers.id);
+        await showSortedCustomers('id', sortCustomers.id);
     });
 
     firstName.addEventListener('click', async () => {
@@ -181,7 +181,7 @@ function collectEditedData() {
         const email = row.children[3].querySelector('input').value.trim();
         const phoneNumber = row.children[4].querySelector('input').value.trim();
         const orderId = row.children[5].querySelector('input').value.trim();
-        editedData.push({customerId: id, firstName, lastName, email, phoneNumber, orderId});
+        editedData.push({id: id, firstName, lastName, email, phoneNumber, orderId});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -326,7 +326,7 @@ function addCustomerModalListener() {
 
             const addedCustomer = await response.json();
             customers.push(new Customer(
-                addedCustomer.customerId,
+                addedCustomer.id,
                 addedCustomer.firstName,
                 addedCustomer.lastName,
                 addedCustomer.email,
@@ -373,7 +373,7 @@ function addSearchButtonListener(sortBy) {
 
 let customers = null;
 (async () => {
-    customers = await getCustomers('id', '0', 'customerId', 'asc');
+    customers = await getCustomers('id', '0', 'id', 'asc');
     await showCustomers(customers);
     addHeadersListeners();
     await addDeleteButtonListeners('клиента', 'customers');
@@ -381,5 +381,5 @@ let customers = null;
     createCustomerModal();
     addCustomerModalListener();
     addCustomerButton();
-    addSearchButtonListener('customerId');
+    addSearchButtonListener('id');
 })();

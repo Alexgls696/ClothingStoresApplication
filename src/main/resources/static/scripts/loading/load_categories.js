@@ -1,7 +1,7 @@
 class Category {
-    constructor(categoryId, categoryName) {
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
     }
 }
 
@@ -17,7 +17,7 @@ async function getCategories(findBy,findValue,sortBy,sortType) {
         const categoryData = await response.json();
         const data = categoryData.content;
         return categoryData.map(category => {
-            return new Category(category.categoryId, category.categoryName);
+            return new Category(category.id, category.name);
         })
     } catch (error) {
     }
@@ -40,10 +40,10 @@ async function showCategories(categories) {
     let tbody = document.createElement('tbody');
     categories.forEach(category => {
         tbody.innerHTML += `<tr>
-<td>${category.categoryId}</td>
-<td>${category.categoryName}</td>
+<td>${category.id}</td>
+<td>${category.name}</td>
 ${access ? `<td>
-<button class="btn btn-danger btn-sm delete-button" data-id="${category.categoryId}">
+<button class="btn btn-danger btn-sm delete-button" data-id="${category.id}">
 Удалить
 </button>
 </td>` : ''} 
@@ -60,8 +60,8 @@ let sortCategory = {
     name: 'asc'
 };
 
-const FIND_BY = 'categoryName';
-let findBy = 'categoryName';
+const FIND_BY = 'name';
+let findBy = 'name';
 let findValue = '';
 
 async function showSortedCategories(sortBy,sortType) {
@@ -75,12 +75,12 @@ function addHeadersListeners() {
     const name = document.getElementById('category-name-header');
     id.addEventListener('click', async () => {
         sortCategory.id = sortCategory.id === 'asc' ? 'desc' : 'asc';
-        await showSortedCategories('categoryId',sortCategory.id);
+        await showSortedCategories('id',sortCategory.id);
     });
 
     name.addEventListener('click', async () => {
         sortCategory.name = sortCategory.name === 'asc' ? 'desc' : 'asc';
-        await showSortedCategories('categoryName', sortCategory.name);
+        await showSortedCategories('name', sortCategory.name);
     });
 }
 
@@ -131,7 +131,7 @@ function collectEditedData() {
         const nameInput = row.children[1].querySelector('input');
         if (nameInput) {
             const name = nameInput.value.trim();
-            editedData.push({categoryId: id, categoryName: name});
+            editedData.push({id: id, name: name});
         }
         makeRowReadOnly(row); // Приводим строку обратно в "только для чтения"
     });
@@ -190,8 +190,8 @@ function createModal() {
                 <div class="modal-body">
                     <form id="addCategoryForm">
                         <div class="form-group">
-                            <label for="categoryNameInput">Название категории</label>
-                            <input type="text" class="form-control" id="categoryNameInput" placeholder="Введите название категории" required>
+                            <label for="nameInput">Название категории</label>
+                            <input type="text" class="form-control" id="nameInput" placeholder="Введите название категории" required>
                         </div>
                     </form>
                 </div>
@@ -221,15 +221,15 @@ function addCategoryModalListener() {
     const closeButton = document.getElementById('closeModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const categoryNameInput = document.getElementById('categoryNameInput');
-        const categoryName = categoryNameInput.value.trim();
+        const nameInput = document.getElementById('nameInput');
+        const name = nameInput.value.trim();
 
-        if (!categoryName) {
+        if (!name) {
             alert('Название категории не может быть пустым.');
             return;
         }
 
-        const newCategory = {categoryName};
+        const newCategory = {name};
 
         try {
             const response = await fetch(`http://${ip}/api/categories`, {
@@ -248,10 +248,10 @@ function addCategoryModalListener() {
             }
 
             const addedCategory = await response.json();
-            categories.push(new Category(addedCategory.categoryId, addedCategory.categoryName));
+            categories.push(new Category(addedCategory.id, addedCategory.name));
             await showCategories(categories);
             addHeadersListeners();
-            await addDeleteButtonListener('categories',categoryName);
+            await addDeleteButtonListener('categories',name);
 
             hideModal();
             document.getElementById('addCategoryForm').reset();
@@ -286,7 +286,7 @@ function addSearchButtonListener(sortBy){
 
 let categories = null;
 (async () => {
-    categories = await getCategories(findBy, '', 'categoryName', 'asc');
+    categories = await getCategories(findBy, '', 'name', 'asc');
     await showCategories(categories);
     addHeadersListeners();
     await addDeleteButtonListeners('категорию', 'categories');
@@ -294,5 +294,5 @@ let categories = null;
     createModal();
     addCategoryModalListener();
     addAddObjectButton();
-    addSearchButtonListener('categoryId');
+    addSearchButtonListener('id');
 })()

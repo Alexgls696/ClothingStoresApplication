@@ -1,7 +1,7 @@
 class OrderStatus {
-    constructor(statusId, statusName) {
-        this.statusId = statusId;
-        this.statusName = statusName;
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
     }
 }
 
@@ -16,7 +16,7 @@ async function getOrderStatuses(findBy,findValue,sortBy,sortType) {
         const orderStatusesData = await response.json();
         const data = orderStatusesData.content;
         return data.map(orderStatus => {
-            return new OrderStatus(orderStatus.statusId, orderStatus.statusName);
+            return new OrderStatus(orderStatus.id, orderStatus.name);
         });
     } catch (error) {
         console.log(error);
@@ -39,10 +39,10 @@ async function showOrderStatuses(orderStatuses) {
     let tbody = document.createElement('tbody');
     orderStatuses.forEach(orderStatus => {
         tbody.innerHTML += `<tr>
-<td>${orderStatus.statusId}</td>
-<td>${orderStatus.statusName}</td>
+<td>${orderStatus.id}</td>
+<td>${orderStatus.name}</td>
 ${access ? `<td>
-<button class="btn btn-danger btn-sm delete-button" data-id="${orderStatus.statusId}">
+<button class="btn btn-danger btn-sm delete-button" data-id="${orderStatus.id}">
 Удалить
 </button>
 </td>` : ''}
@@ -54,13 +54,13 @@ ${access ? `<td>
 }
 
 
-const FIND_BY = 'statusId';
-let findBy = 'statusId';
+const FIND_BY = 'id';
+let findBy = 'id';
 let findValue = 0;
 
 let sortOrderStatuses = {
     id: 'asc',
-    statusName: 'asc',
+    name: 'asc',
 };
 
 async function showSortedOrderStatuses(sortBy,sortType) {
@@ -71,16 +71,16 @@ async function showSortedOrderStatuses(sortBy,sortType) {
 
 function addHeadersListeners() {
     const id = document.getElementById('order-status-id-header');
-    const statusName = document.getElementById('order-status-status-name-header');
+    const name = document.getElementById('order-status-status-name-header');
 
     id.addEventListener('click', async () => {
         sortOrderStatuses.id = sortOrderStatuses.id === 'asc' ? 'desc' : 'asc';
-        await showSortedOrderStatuses('statusId'  ,sortOrderStatuses.id);
+        await showSortedOrderStatuses('id'  ,sortOrderStatuses.id);
     });
 
-    statusName.addEventListener('click', async () => {
-        sortOrderStatuses.statusName = sortOrderStatuses.statusName === 'asc' ? 'desc' : 'asc';
-        await showSortedOrderStatuses('statusName'  ,sortOrderStatuses.statusName);
+    name.addEventListener('click', async () => {
+        sortOrderStatuses.name = sortOrderStatuses.name === 'asc' ? 'desc' : 'asc';
+        await showSortedOrderStatuses('name'  ,sortOrderStatuses.name);
     });
 }
 
@@ -128,8 +128,8 @@ function collectEditedData() {
     const editedData = [];
     rows.forEach(row => {
         const id = row.children[0].textContent.trim();
-        const statusName = row.children[1].querySelector('input').value.trim();
-        editedData.push({ statusId: id, statusName });
+        const name = row.children[1].querySelector('input').value.trim();
+        editedData.push({ id: id, name });
         makeRowReadOnly(row);
     });
     return editedData;
@@ -186,8 +186,8 @@ function createOrderStatusModal() {
                 <div class="modal-body">
                     <form id="addOrderStatusForm">
                         <div class="form-group">
-                            <label for="statusNameInput">Название статуса</label>
-                            <input type="text" class="form-control" id="statusNameInput" placeholder="Введите название статуса" required>
+                            <label for="nameInput">Название статуса</label>
+                            <input type="text" class="form-control" id="nameInput" placeholder="Введите название статуса" required>
                         </div>
                     </form>
                 </div>
@@ -217,15 +217,15 @@ function addOrderStatusModalListener() {
     const closeButton = document.getElementById('closeOrderStatusModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const statusName = document.getElementById('statusNameInput').value.trim();
+        const name = document.getElementById('nameInput').value.trim();
 
-        if (!statusName) {
+        if (!name) {
             alert('Пожалуйста, заполните все обязательные поля.');
             return;
         }
 
         const newOrderStatus = {
-            statusName
+            name
         };
 
         try {
@@ -249,13 +249,13 @@ function addOrderStatusModalListener() {
 
             const addedOrderStatus = await response.json();
             orderStatuses.push(new OrderStatus(
-                addedOrderStatus.statusId,
-                addedOrderStatus.statusName
+                addedOrderStatus.id,
+                addedOrderStatus.name
             ));
 
             await showOrderStatuses(orderStatuses);
             addHeadersListeners();
-            await addDeleteButtonListener('orderStatuses',statusName);
+            await addDeleteButtonListener('orderStatuses',name);
             hideOrderStatusModal();
             document.getElementById('addOrderStatusForm').reset();
         } catch (error) {
@@ -289,7 +289,7 @@ function addSearchButtonListener(sortBy){
 
 let orderStatuses = null;
 (async () => {
-    orderStatuses = await getOrderStatuses(findBy,'0','statusId','asc');
+    orderStatuses = await getOrderStatuses(findBy,'0','id','asc');
     await showOrderStatuses(orderStatuses);
     addHeadersListeners();
     await addDeleteButtonListeners('статус заказа', 'orderStatuses');
@@ -297,5 +297,5 @@ let orderStatuses = null;
     createOrderStatusModal();
     addOrderStatusModalListener();
     addOrderStatusButton();
-    addSearchButtonListener('statusId');
+    addSearchButtonListener('id');
 })();

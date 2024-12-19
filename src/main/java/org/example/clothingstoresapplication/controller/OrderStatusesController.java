@@ -79,8 +79,8 @@ public class OrderStatusesController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "statusId" -> orderStatusRepository.findAll(pageable(sort));
-            case "statusName" -> orderStatusRepository.findAllByStatusNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "id" -> orderStatusRepository.findAll(pageable(sort));
+            case "statusName" -> orderStatusRepository.findAllByNameLikeIgnoreCase(findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
     }

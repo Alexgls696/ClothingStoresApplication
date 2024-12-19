@@ -26,7 +26,7 @@ import java.util.Properties;
 public class DynamicDatabaseConfig {
 
     private final Map<Object, Object> dataSources = new HashMap<>();
-    public static String DEFAULT_USER = "_anon";
+    public static String DEFAULT_USER = "_admin";
     public static String DEFAULT_PASSWORD = "12341234";
 
     @Bean

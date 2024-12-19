@@ -78,8 +78,8 @@ public class ProductTypeController {
         Sort sort = Sort.by(sortType.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return switch (findBy) {
-            case "typeId" -> productsTypeRepository.findAll(pageable(sort));
-            case "typeName" -> productsTypeRepository.findAllByTypeNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "id" -> productsTypeRepository.findAll(pageable(sort));
+            case "name" -> productsTypeRepository.findAllByNameLikeIgnoreCase(findValue+"%", pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };
     }
