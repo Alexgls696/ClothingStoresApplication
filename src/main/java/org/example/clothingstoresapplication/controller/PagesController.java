@@ -17,6 +17,11 @@ public class PagesController {
         }
     }
 
+    @RequestMapping( value = {"/index","/"})
+    public String index(){
+        return "categories";
+    }
+
     @RequestMapping("/categories")
     public String showCategories(Model model){
         var user = getCurrentUser();
