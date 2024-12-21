@@ -99,8 +99,8 @@ public class OrderProductsController {
 
         return switch (findBy) {
             case "id" -> orderProductRepository.findAll(pageable(sort));
-            case "productId" -> orderProductRepository.findAllByProduct(productRepository.findById(Integer.parseInt(findValue)).get(), pageable(sort));
-            case "orderId" -> orderProductRepository.findAllByOrder(orderRepository.findById(Integer.parseInt(findValue)).get(), pageable(sort));
+            case "productName" -> orderProductRepository.findAllByProductNameLikeIgnoreCase(findValue+"%", pageable(sort));
+            case "orderId" -> orderProductRepository.findAllByOrderId(Integer.parseInt(findValue), pageable(sort));
             case "count" -> orderProductRepository.findAllByCount(Integer.parseInt(findValue), pageable(sort));
             default -> throw new IllegalStateException("Unexpected value: " + findBy);
         };

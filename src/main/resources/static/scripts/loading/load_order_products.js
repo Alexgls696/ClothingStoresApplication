@@ -1,11 +1,72 @@
 class OrderProduct {
-    constructor(id, productId, orderId, count) {
+    constructor(id, product, order, count) {
         this.id = id;
-        this.productId = productId;
-        this.orderId = orderId;
+        this.product = product;
+        this.order = order;
         this.count = count;
     }
 }
+
+class Product {
+    constructor(id, name, price, category, type, supplier) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.type = type;
+        this.supplier = supplier;
+    }
+}
+class Order {
+    constructor(id, orderDate, storeId, statusId) {
+        this.id = id;
+        this.orderDate = orderDate;
+        this.storeId = storeId;
+        this.statusId = statusId;
+    }
+}
+
+
+async function getOrders(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/orders/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const ordersData = await response.json();
+        const data = ordersData.content;
+        return data.map(order => {
+            return new Order(order.id, order.orderDate, order.storeId, order.statusId);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+async function getProducts(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/products/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const productsData = await response.json();
+        const data = productsData.content;
+        return data.map(product => {
+            return new Product(
+                product.id,
+                product.name,
+                product.price,
+                product.category,
+                product.type,
+                product.supplier
+            );
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 const ip = location.host;
 
@@ -19,8 +80,8 @@ async function getOrderProducts(findBy,findValue,sortBy,sortType) {
         const data = orderProductsData.content;
         return data.map(orderProduct => {
             return new OrderProduct(orderProduct.id,
-                orderProduct.productId,
-                orderProduct.orderId,
+                orderProduct.product,
+                orderProduct.order,
                 orderProduct.count);
         });
     } catch (error) {
@@ -46,7 +107,7 @@ async function showOrderProducts(orderProducts) {
 
     orderProductsTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="order-product-id-header" class="header">ID</th>' +
-        '<th id="order-product-productId-header" class="header">ID Продукта</th>' +
+        '<th id="order-product-productId-header" class="header">Продукт</th>' +
         '<th id="order-product-orderId-header" class="header">ID Заказа</th>' +
         '<th id="order-product-count-header" class="header">Количество</th>' +
         (access ? '<th>Удаление</th>' : '') +
@@ -56,8 +117,8 @@ async function showOrderProducts(orderProducts) {
     orderProducts.forEach(orderProduct => {
         tbody.innerHTML += `<tr>
 <td>${orderProduct.id}</td>
-<td>${orderProduct.productId}</td>
-<td>${orderProduct.orderId}</td>
+<td>${orderProduct.product.name}</td>
+<td>${orderProduct.order.id}</td>
 <td>${orderProduct.count}</td>
 ${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${orderProduct.id}">
@@ -90,7 +151,7 @@ function addHeadersListeners() {
 
     productId.addEventListener('click', async () => {
         sortOrderProducts.productId = sortOrderProducts.productId === 'asc' ? 'desc' : 'asc';
-        await showSortedOrderProducts('productId' , sortOrderProducts.productId);
+        await showSortedOrderProducts('productName' , sortOrderProducts.productId);
     });
 
     orderId.addEventListener('click', async () => {
@@ -194,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 //--------------------------------------------------------------------------------------
 // Создание модального окна для добавления OrderProduct
-function createOrderProductModal() {
+async function createOrderProductModal() {
     const modalHtml = `
     <div class="modal" id="addOrderProductModal" tabindex="-1" role="dialog" aria-labelledby="addOrderProductModalLabel" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog" role="document" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 5px; padding: 20px;">
@@ -208,12 +269,12 @@ function createOrderProductModal() {
                 <div class="modal-body">
                     <form id="addOrderProductForm">
                         <div class="form-group">
-                            <label for="productIdInput">ID продукта</label>
-                            <input type="number" class="form-control" id="productIdInput" placeholder="Введите ID продукта" required>
+                            <label for="productIdInput">Товар</label>
+                           <select id="product" class="form-select"></select>
                         </div>
                         <div class="form-group">
                             <label for="orderIdInput">ID заказа</label>
-                            <input type="number" class="form-control" id="orderIdInput" placeholder="Введите ID заказа" required>
+                             <select id="order" class="form-select"></select>
                         </div>
                         <div class="form-group">
                             <label for="countInput">Количество</label>
@@ -229,6 +290,16 @@ function createOrderProductModal() {
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+    let products = await getProducts('productName','','name','asc');
+    let orders = await getOrders('id','','id','asc');
+    let categoryContainer = document.getElementById('product');
+    let orderContainer = document.getElementById('order');
+    products.forEach(product=>{
+        categoryContainer.innerHTML+=`<option value='${JSON.stringify(product)}'>${product.name}</option>`
+    })
+    orders.forEach(order=>{
+        orderContainer.innerHTML+=`<option value='${JSON.stringify(order)}'>${order.id}</option>`
+    })
 }
 
 // Показ модального окна
@@ -249,18 +320,20 @@ function addOrderProductModalListener() {
     const closeButton = document.getElementById('closeOrderProductModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const productId = document.getElementById('productIdInput').value.trim();
-        const orderId = document.getElementById('orderIdInput').value.trim();
+        let product = document.getElementById('product').value;
+        let order = document.getElementById('order').value.trim();
         const count = document.getElementById('countInput').value.trim();
 
-        if (!productId || !orderId || !count) {
+        if ( !count) {
             alert('Пожалуйста, заполните все обязательные поля.');
             return;
         }
 
+        product = JSON.parse(product);
+        order = JSON.parse(order);
         const newOrderProduct = {
-            productId,
-            orderId,
+            product,
+            order,
             count
         };
 
@@ -315,8 +388,8 @@ function addSearchButtonListener(sortBy){
     document.getElementById('searchButton').addEventListener('click', async function() {
         findBy = document.getElementById('searchField').value;
         findValue = document.getElementById('searchInput').value;
-        categories = await getOrderProducts(findBy,findValue,sortBy,'asc');
-        await showOrderProducts(categories);
+        orderProducts = await getOrderProducts(findBy,findValue,sortBy,'asc');
+        await showOrderProducts(orderProducts);
         await addDeleteButtonListeners('товар-заказ', 'orderProducts');
         addHeadersListeners();
     });
@@ -331,6 +404,6 @@ let orderProducts = null;
 
     createOrderProductModal();
     addOrderProductModalListener();
-    addOrderProductButton();
+   // addOrderProductButton();
     addSearchButtonListener('id');
 })();

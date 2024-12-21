@@ -28,8 +28,7 @@ public interface OrderProductRepository extends CrudRepository<OrderProduct, Int
     @Query(value = "from OrderProduct ")
     Page<OrderProduct> findAllOrderByCount(Pageable pageable);
 
-    List<OrderProduct> findAllByOrderId(int id, Pageable pageable);
-    List<OrderProduct> findAllByOrder(Order order, Pageable pageable);
-    List<OrderProduct> findAllByProduct(Product product, Pageable pageable);
-    List<OrderProduct> findAllByCount(int count, Pageable pageable);
+    Page<OrderProduct> findAllByOrderId(int id, Pageable pageable);
+    Page<OrderProduct> findAllByProductNameLikeIgnoreCase(String name, Pageable pageable);
+    Page<OrderProduct> findAllByCount(int count, Pageable pageable);
 }

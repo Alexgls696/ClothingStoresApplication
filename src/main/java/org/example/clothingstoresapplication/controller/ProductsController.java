@@ -57,7 +57,6 @@ public class ProductsController {
     public Product addProduct(@RequestBody Product product) {
         productRepository.saveByParams(product.getName(),product.getPrice(),(int)product.getCategory().getId(),product.getType().getId(),product.getSupplier().getId());
         return product;
-        //return productRepository.save(product);
     }
 
     @PostMapping("updateAllByParams")
