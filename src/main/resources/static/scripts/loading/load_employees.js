@@ -37,6 +37,29 @@ let sortEmployees = {
     position: 'asc'
 };
 
+
+async function addForeignKeysInEditorTable(){
+    let stores  = await getStores('location','','location','asc');
+    employees.forEach(employee=>{
+        const storesEditContainer = document.getElementById(`store-edit-${employee.id}`);
+        stores.forEach(store=>{
+            storesEditContainer.innerHTML+=`<option value='${JSON.stringify(store)}' 
+            ${store.id===employee.store.id ? `selected = "selected"` : ``}>${store.location} </option>`
+        })
+    });
+}
+
+async function addForeignKeysInEditorTableAndAddForm(){
+    let stores = await getStores('location','','location','asc');
+    let storeContainer = document.getElementById('store');
+
+    stores.forEach(store=>{
+        storeContainer.innerHTML+=`<option value='${JSON.stringify(store)}'>${store.location}</option>`
+    })
+
+    await addForeignKeysInEditorTable();
+}
+
 async function showEmployees(employees) {
     const employeesTable = document.getElementById('employees-table');
     let access = await checkRoleForDelete();
@@ -55,7 +78,7 @@ async function showEmployees(employees) {
 <td>${employee.id}</td>
 <td>${employee.firstName}</td>
 <td>${employee.lastName}</td>
-<td>${employee.store.location}</td>
+<td> <select id="store-edit-${employee.id}" class="form-select"></select></div></td>
 <td>${employee.position}</td>
 <td>${employee.email}</td>
 ${access ? `<td>
@@ -78,6 +101,7 @@ let findValue = 0;
 async function showSortedEmployees(sortBy,sortType) {
     employees = await getEmployees(findBy,findValue,sortBy,sortType);
     await showEmployees(employees);
+    await addForeignKeysInEditorTable();
     addHeadersListeners();
 }
 
@@ -124,7 +148,7 @@ function addHeadersListeners() {
 function makeRowEditable(row) {
     const cells = Array.from(row.children);
     cells.forEach((cell, index) => {
-        if (index > 0 && index < 6) { // Пропускаем ID
+        if (index > 0 && index < 6 && index !==3) { // Пропускаем ID
             const input = document.createElement('input');
             input.type = 'text';
             input.value = cell.textContent.trim();
@@ -166,10 +190,10 @@ function collectEditedData() {
         const id = row.children[0].textContent.trim();
         const firstName = row.children[1].querySelector('input').value.trim();
         const lastName = row.children[2].querySelector('input').value.trim();
-        const storeId = row.children[3].querySelector('input').value.trim();
+        const store = JSON.parse(document.getElementById(`store-edit-${id}`).value);
         const position = row.children[4].querySelector('input').value.trim();
         const email = row.children[5].querySelector('input').value.trim();
-        editedData.push({id: id, firstName, lastName, storeId, position, email});
+        editedData.push({id: id, firstName, lastName, store, position, email});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -280,12 +304,7 @@ async function createEmployeeModal() {
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-    let stores = await getStores('location','','location','asc');
-    let storeContainer = document.getElementById('store');
-
-    stores.forEach(store=>{
-        storeContainer.innerHTML+=`<option value='${JSON.stringify(store)}'>${store.location}</option>`
-    })
+   await addForeignKeysInEditorTableAndAddForm();
 }
 
 // Показ модального окна
@@ -356,6 +375,7 @@ function addEmployeeModalListener() {
 
             await showEmployees(employees);
             addHeadersListeners();
+            await addForeignKeysInEditorTable();
             await addDeleteButtonListener('employees',firstName+" "+lastName);
             hideEmployeeModal(); // Закрытие модального окна
             document.getElementById('addEmployeeForm').reset(); // Очистка формы

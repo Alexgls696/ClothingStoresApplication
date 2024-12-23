@@ -56,11 +56,11 @@ public class ProductsController {
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
         productRepository.saveByParams(product.getName(),product.getPrice(),(int)product.getCategory().getId(),product.getType().getId(),product.getSupplier().getId());
-        return product;
+        return productRepository.findLastProduct();
     }
 
     @PostMapping("updateAllByParams")
-    public void updateAllByParams(@RequestBody List<Product> products) {
+    public Product updateAllByParams(@RequestBody List<Product> products) {
         for(var it:products){
             productRepository.updateByParams(it.getId(),
                     it.getName(),
@@ -69,6 +69,8 @@ public class ProductsController {
                     it.getType().getId(),
                     it.getSupplier().getId());
         }
+        Product last = productRepository.findLastProduct();
+        return last;
     }
 
     @PostMapping("/updateAll")

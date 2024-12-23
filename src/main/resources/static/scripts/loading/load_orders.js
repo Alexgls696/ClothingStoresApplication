@@ -72,6 +72,39 @@ async function getOrders(findBy,findValue,sortBy,sortType) {
 }
 
 
+async function addForeignKeysInEditorTable(){
+    let stores  = await getStores('location','','location','asc');
+    let statuses = await getOrderStatuses('statusName','','name','asc');
+    orders.forEach(order=>{
+        const storesEditContainer = document.getElementById(`store-edit-${order.id}`);
+        stores.forEach(store=>{
+            storesEditContainer.innerHTML+=`<option value='${JSON.stringify(store)}' 
+            ${store.id===order.store.id ? `selected = "selected"` : ``}>${store.location} </option>`
+        });
+
+        const statusEditContainer = document.getElementById(`status-edit-${order.id}`);
+        statuses.forEach(status=>{
+            statusEditContainer.innerHTML+=`<option value='${JSON.stringify(status)}' 
+            ${status.id===order.status.id ? `selected = "selected"` : ``}>${status.name} </option>`
+        });
+    });
+}
+
+async function addForeignKeysInEditorTableAndAddForm(){
+    let stores = await getStores('location','','location','asc');
+    let statuses = await getOrderStatuses('statusName','','name','asc');
+
+    let storesContainer = document.getElementById('store');
+    let statusesContainer = document.getElementById('status');
+    stores.forEach(store=>{
+        storesContainer.innerHTML+=`<option value='${JSON.stringify(store)}'>${store.location}</option>`
+    })
+    statuses.forEach(status=>{
+        statusesContainer.innerHTML+=`<option value='${JSON.stringify(status)}'>${status.name}</option>`
+    });
+    await addForeignKeysInEditorTable();
+}
+
 async function showOrders(orders) {
     const ordersTable = document.getElementById('orders-table');
     let access = await checkRoleForDelete();
@@ -89,8 +122,8 @@ async function showOrders(orders) {
         tbody.innerHTML += `<tr>
 <td>${order.id}</td>
 <td>${order.date}</td>
-<td>${order.store.location}</td>
-<td>${order.status.name}</td>
+<td> <select id="store-edit-${order.id}" class="form-select"></select></div></td>
+<td> <select id="status-edit-${order.id}" class="form-select"></select></div></td>
 ${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${order.id}">
 Удалить
@@ -118,6 +151,7 @@ async function showSortedOrders(sortBy,sortType) {
     orders = await getOrders(findBy,findValue,sortBy,sortType);
     await showOrders(orders);
     addHeadersListeners();
+    await addForeignKeysInEditorTable();
 }
 
 function addHeadersListeners() {
@@ -151,7 +185,7 @@ function addHeadersListeners() {
 function makeRowEditable(row) {
     const cells = Array.from(row.children);
     cells.forEach((cell, index) => {
-        if (index > 0 && index < 4) { // Пропускаем ID
+        if (index > 0 && index < 2 ) { // Пропускаем ID
             const input = document.createElement('input');
             input.type = 'text';
             input.value = cell.textContent.trim();
@@ -191,10 +225,10 @@ function collectEditedData() {
     const editedData = [];
     rows.forEach(row => {
         const id = row.children[0].textContent.trim();
-        const orderDate = row.children[1].querySelector('input').value.trim();
-        const store = row.children[2].querySelector('input').value.trim();
-        const status = row.children[3].querySelector('input').value.trim();
-        editedData.push({id: id, orderDate, store, status});
+        const date = row.children[1].querySelector('input').value.trim();
+        const store = JSON.parse(document.getElementById(`store-edit-${id}`).value);
+        const status = JSON.parse(document.getElementById(`status-edit-${id}`).value);
+        editedData.push({id: id, date, store, status});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -274,17 +308,7 @@ async function createOrderModal() {
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-    let stores = await getStores('location','','location','asc');
-    let statuses = await getOrderStatuses('statusName','','name','asc');
-
-    let storesContainer = document.getElementById('store');
-    let statusesContainer = document.getElementById('status');
-    stores.forEach(store=>{
-        storesContainer.innerHTML+=`<option value='${JSON.stringify(store)}'>${store.location}</option>`
-    })
-    statuses.forEach(status=>{
-        statusesContainer.innerHTML+=`<option value='${JSON.stringify(status)}'>${status.name}</option>`
-    })
+   await addForeignKeysInEditorTableAndAddForm();
 }
 
 function showOrderModal() {
@@ -348,6 +372,7 @@ function addOrderModalListener() {
             addHeadersListeners();
             await addDeleteButtonListener('orders','заказ');
             hideOrderModal();
+            await addForeignKeysInEditorTable();
             document.getElementById('addOrderForm').reset();
         } catch (error) {
             console.error('Ошибка при добавлении заказа:', error);

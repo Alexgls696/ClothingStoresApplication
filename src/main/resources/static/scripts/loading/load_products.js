@@ -454,6 +454,7 @@ function addProductModalListener() {
             addHeadersListeners();
             await addDeleteButtonListener('products',name);
             hideProductModal();
+            await addForeignKeysInEditorTable();
             document.getElementById('addProductForm').reset();
         } catch (error) {
             console.error('Ошибка при добавлении продукта:', error);
@@ -590,14 +591,25 @@ function addProductAndSupplierModalListener() {
             });
 
             hideProductAndSupplierModal();
-            if (response.ok) {
-                showError("Обновите страницу")
+            if (!response.ok) {
+                showError(response.message)
                 closeButton.click();
-            }else{
-                let data = await response.json()
-                showError(data.message);
-                closeButton.click()
             }
+            const addedProduct = await response.json();
+            products.push(new Product(
+                addedProduct.id,
+                addedProduct.name,
+                addedProduct.price,
+                addedProduct.category,
+                addedProduct.type,
+                addedProduct.supplier
+            ));
+
+            await showProducts(products);
+            addHeadersListeners();
+            await addDeleteButtonListener('products',name);
+            hideProductModal();
+            await addForeignKeysInEditorTable();
         } catch (error) {
             console.error('Ошибка при добавлении продукта:', error);
         }

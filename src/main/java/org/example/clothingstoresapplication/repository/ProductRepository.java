@@ -70,4 +70,7 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
     Page<Product>findAllBySupplierNameLikeIgnoreCase(String name, Pageable pageable);
     Page<Product>findAllByNameLikeIgnoreCase(String productName, Pageable pageable);
     Page<Product>findAllByPrice(double price, Pageable pageable);
+
+    @Query("from Product order by id desc limit 1")
+    Product findLastProduct();
 }
