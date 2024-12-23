@@ -44,7 +44,7 @@ async function showEmployees(employees) {
         '<th id="employee-id-header" class="header">ID</th>' +
         '<th id="employee-name-header" class="header">Имя</th>' +
         '<th id="employee-surname-header" class="header">Фамилия</th>' +
-        '<th id="employee-storeId-header" class="header">ID Магазина</th>' +
+        '<th id="employee-storeId-header" class="header">Магазин</th>' +
         '<th id="employee-position-header" class="header">Должность</th>' +
         '<th id="employee-email-header" class="header">Почта</th>' +
         (access ? '<th>Удаление</th>' : '') + // Условно добавляем заголовок столбца
@@ -258,7 +258,7 @@ async function createEmployeeModal() {
                             <input type="text" class="form-control" id="lastNameInput" placeholder="Введите фамилию сотрудника" required>
                         </div>
                         <div class="form-group">
-                            <label for="storeIdInput">Магазина</label>
+                            <label for="storeIdInput">Магазин</label>
                              <select id="store" class="form-select"></select>
                         </div>
                         <div class="form-group">

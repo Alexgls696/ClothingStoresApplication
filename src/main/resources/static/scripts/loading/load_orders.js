@@ -1,13 +1,59 @@
 class Order {
-    constructor(id, orderDate, storeId, statusId) {
+    constructor(id, date, store, status) {
         this.id = id;
-        this.orderDate = orderDate;
-        this.storeId = storeId;
-        this.statusId = statusId;
+        this.date = date;
+        this.store = store;
+        this.status = status;
+    }
+}
+
+class Store {
+    constructor(id, location) {
+        this.id = id;
+        this.location = location;
+    }
+}
+
+class OrderStatus {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
     }
 }
 
 const ip = location.host;
+
+async function getOrderStatuses(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/orderStatuses/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const orderStatusesData = await response.json();
+        const data = orderStatusesData.content;
+        return data.map(orderStatus => {
+            return new OrderStatus(orderStatus.id, orderStatus.name);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function getStores(findBy,findValue,sortBy,sortType) {
+    try {
+        const response = await fetch(`http://${ip}/api/stores/findBy?findBy=${findBy}&findValue=${findValue}&sortBy=${sortBy}&sortType=${sortType}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const storesData = await response.json();
+        const data = storesData.content;
+        return data.map(store => {
+            return new Store(store.id, store.location);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 async function getOrders(findBy,findValue,sortBy,sortType) {
     try {
@@ -18,14 +64,12 @@ async function getOrders(findBy,findValue,sortBy,sortType) {
         const ordersData = await response.json();
         const data = ordersData.content;
         return data.map(order => {
-            return new Order(order.id, order.orderDate, order.storeId, order.statusId);
+            return new Order(order.id, order.date, order.store, order.status);
         });
     } catch (error) {
         console.log(error);
     }
 }
-
-
 
 
 async function showOrders(orders) {
@@ -35,8 +79,8 @@ async function showOrders(orders) {
     ordersTable.innerHTML = '<thead class="table-dark"><tr>' +
         '<th id="order-id-header" class="header">ID</th>' +
         '<th id="order-date-header" class="header">Дата заказа</th>' +
-        '<th id="order-store-header" class="header">ID Магазина</th>' +
-        '<th id="order-status-header" class="header">ID Статуса</th>' +
+        '<th id="order-store-header" class="header">Магазин</th>' +
+        '<th id="order-status-header" class="header">Статус заказа</th>' +
         (access ? '<th>Удаление</th>' : '') +
         '</tr></thead>';
 
@@ -44,9 +88,9 @@ async function showOrders(orders) {
     orders.forEach(order => {
         tbody.innerHTML += `<tr>
 <td>${order.id}</td>
-<td>${order.orderDate}</td>
-<td>${order.storeId}</td>
-<td>${order.statusId}</td>
+<td>${order.date}</td>
+<td>${order.store.location}</td>
+<td>${order.status.name}</td>
 ${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${order.id}">
 Удалить
@@ -62,8 +106,8 @@ ${access ? `<td>
 let sortOrders = {
     id: 'asc',
     date: 'asc',
-    storeId: 'asc',
-    statusId: 'asc'
+    store: 'asc',
+    status: 'asc'
 };
 
 const FIND_BY = 'id';
@@ -79,8 +123,8 @@ async function showSortedOrders(sortBy,sortType) {
 function addHeadersListeners() {
     const id = document.getElementById('order-id-header');
     const date = document.getElementById('order-date-header');
-    const storeId = document.getElementById('order-store-header');
-    const statusId = document.getElementById('order-status-header');
+    const store = document.getElementById('order-store-header');
+    const status = document.getElementById('order-status-header');
 
     id.addEventListener('click', async () => {
         sortOrders.id = sortOrders.id === 'asc' ? 'desc' : 'asc';
@@ -89,17 +133,17 @@ function addHeadersListeners() {
 
     date.addEventListener('click', async () => {
         sortOrders.date = sortOrders.date === 'asc' ? 'desc' : 'asc';
-        await showSortedOrders('orderDate' , sortOrders.date);
+        await showSortedOrders('date' , sortOrders.date);
     });
 
-    storeId.addEventListener('click', async () => {
-        sortOrders.storeId = sortOrders.storeId === 'asc' ? 'desc' : 'asc';
-        await showSortedOrders('storeId' , sortOrders.storeId);
+    store.addEventListener('click', async () => {
+        sortOrders.store = sortOrders.store === 'asc' ? 'desc' : 'asc';
+        await showSortedOrders('storeLocation' , sortOrders.store);
     });
 
-    statusId.addEventListener('click', async () => {
-        sortOrders.statusId = sortOrders.statusId === 'asc' ? 'desc' : 'asc';
-        await showSortedOrders('statusId',  sortOrders.statusId);
+    status.addEventListener('click', async () => {
+        sortOrders.status = sortOrders.status === 'asc' ? 'desc' : 'asc';
+        await showSortedOrders('statusName',  sortOrders.status);
     });
 }
 
@@ -148,9 +192,9 @@ function collectEditedData() {
     rows.forEach(row => {
         const id = row.children[0].textContent.trim();
         const orderDate = row.children[1].querySelector('input').value.trim();
-        const storeId = row.children[2].querySelector('input').value.trim();
-        const statusId = row.children[3].querySelector('input').value.trim();
-        editedData.push({id: id, orderDate, storeId, statusId});
+        const store = row.children[2].querySelector('input').value.trim();
+        const status = row.children[3].querySelector('input').value.trim();
+        editedData.push({id: id, orderDate, store, status});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -194,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //--------------------------------------------------------------------------------------
 
-function createOrderModal() {
+async function createOrderModal() {
     const modalHtml = `
     <div class="modal" id="addOrderModal" tabindex="-1" role="dialog" aria-labelledby="addOrderModalLabel" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog" role="document" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 5px; padding: 20px;">
@@ -212,12 +256,12 @@ function createOrderModal() {
                             <input type="date" class="form-control" id="orderDateInput" required>
                         </div>
                         <div class="form-group">
-                            <label for="storeIdInput">ID магазина</label>
-                            <input type="number" class="form-control" id="storeIdInput" required>
+                            <label for="storeInput">Магазин</label>
+                           <select id="store" class="form-select"></select>
                         </div>
                         <div class="form-group">
-                            <label for="statusIdInput">ID статуса</label>
-                            <input type="number" class="form-control" id="statusIdInput" required>
+                            <label for="statusInput">Статус заказа</label>
+                          <select id="status" class="form-select"></select>
                         </div>
                     </form>
                 </div>
@@ -229,6 +273,18 @@ function createOrderModal() {
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    let stores = await getStores('location','','location','asc');
+    let statuses = await getOrderStatuses('statusName','','name','asc');
+
+    let storesContainer = document.getElementById('store');
+    let statusesContainer = document.getElementById('status');
+    stores.forEach(store=>{
+        storesContainer.innerHTML+=`<option value='${JSON.stringify(store)}'>${store.location}</option>`
+    })
+    statuses.forEach(status=>{
+        statusesContainer.innerHTML+=`<option value='${JSON.stringify(status)}'>${status.name}</option>`
+    })
 }
 
 function showOrderModal() {
@@ -247,19 +303,21 @@ function addOrderModalListener() {
     const closeButton = document.getElementById('closeOrderModalButton');
 
     saveButton.addEventListener('click', async () => {
-        const orderDate = document.getElementById('orderDateInput').value.trim();
-        const storeId = document.getElementById('storeIdInput').value.trim();
-        const statusId = document.getElementById('statusIdInput').value.trim();
+        const date = document.getElementById('orderDateInput').value.trim();
+        let store = document.getElementById('store').value;
+        let status = document.getElementById('status').value;
 
-        if (!orderDate || !storeId || !statusId) {
+        if (!date || !store || !status) {
             alert('Пожалуйста, заполните все обязательные поля.');
             return;
         }
 
+        store = JSON.parse(store);
+        status = JSON.parse(status);
         const newOrder = {
-            orderDate,
-            storeId,
-            statusId
+            date,
+            store,
+            status
         };
 
         try {
@@ -282,8 +340,8 @@ function addOrderModalListener() {
             orders.push(new Order(
                 addedOrder.id,
                 addedOrder.orderDate,
-                addedOrder.storeId,
-                addedOrder.statusId
+                addedOrder.store,
+                addedOrder.status
             ));
 
             await showOrders(orders);

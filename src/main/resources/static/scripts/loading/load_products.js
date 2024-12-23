@@ -51,6 +51,7 @@ let findValue = 0;
 async function showSortedProducts(sortBy,sortType) {
     products = await getProducts(findBy,findValue,sortBy,sortType)
     await showProducts(products);
+    await addForeignKeysInEditorTable();
     addHeadersListeners();
 }
 
@@ -93,6 +94,54 @@ function addHeadersListeners() {
     });
 }
 
+
+async function addForeignKeysInEditorTable(){
+    let categories = await getCategories('name','','name','asc');
+    let types = await getProductTypes('name','','name','asc');
+    let suppliers = await getSuppliers('name','','name','asc');
+
+    products.forEach(product=>{
+        const categoriesEditContainer = document.getElementById(`category-edit-${product.id}`);
+        categories.forEach(category=>{
+            categoriesEditContainer.innerHTML+=`<option value='${JSON.stringify(category)}' 
+            ${category.id===product.category.id ? `selected = "selected"` : ``}>${category.name} </option>`
+        })
+
+        const typesEditContainer = document.getElementById(`type-edit-${product.id}`);
+        types.forEach(type=>{
+            typesEditContainer.innerHTML+=`<option value='${JSON.stringify(type)}'
+             ${type.id===product.type.id ? `selected = "selected"` : ``}>${type.name}</option>`
+        })
+
+        const suppliersEditContainer = document.getElementById(`supplier-edit-${product.id}`);
+        suppliers.forEach(supplier=>{
+            suppliersEditContainer.innerHTML+=`<option value='${JSON.stringify(supplier)}'
+            ${supplier.id===product.supplier.id ? `selected = "selected"` : ``}>${supplier.name}</option>`
+        })
+    });
+}
+
+async function addForeignKeysInEditorTableAndAddForm(){
+    let categories = await getCategories('name','','name','asc');
+    let types = await getProductTypes('name','','name','asc');
+    let suppliers = await getSuppliers('name','','name','asc');
+
+    let categoryContainer = document.getElementById('category');
+    let typeContainer = document.getElementById('type');
+    let supplierContainer = document.getElementById('supplier');
+
+    categories.forEach(category=>{
+        categoryContainer.innerHTML+=`<option value='${JSON.stringify(category)}'>${category.name}</option>`
+    })
+    types.forEach(type=>{
+        typeContainer.innerHTML+=`<option value='${JSON.stringify(type)}'>${type.name}</option>`
+    })
+    suppliers.forEach(supplier=>{
+        supplierContainer.innerHTML+=`<option value='${JSON.stringify(supplier)}'>${supplier.name}</option>`
+    })
+    await addForeignKeysInEditorTable();
+}
+
 async function showProducts(products) {
     const productsTable = document.getElementById('products-table');
     let access = await checkRoleForDelete();
@@ -104,7 +153,7 @@ async function showProducts(products) {
                 <th id="product-name-header" class="header">Название</th>
                 <th id="product-price-header" class="header">Цена</th>
                 <th id="product-categoryId-header" class="header">Категория</th>
-                <th id="product-typeId-header" class="header">Тип продукта</th>
+                <th id="product-typeId-header" class="header">Тип товара</th>
                 <th id="product-supplierId-header" class="header">Производитель</th>
                 ${access ? '<th>Удаление</th>' : ''}
             </tr>
@@ -117,9 +166,9 @@ async function showProducts(products) {
                 <td>${product.id}</td>
                 <td>${product.name}</td>
                 <td>${product.price}</td>
-                <td>${product.category.name}</td>
-                <td>${product.type.name}</td>
-                <td>${product.supplier.name}</td>
+                <td> <select id="category-edit-${product.id}" class="form-select"></select></div></td>
+                <td> <select id="type-edit-${product.id}" class="form-select"></select></td>
+                <td> <select id="supplier-edit-${product.id}" class="form-select"></select></div></td>
                 ${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${product.id}">
 Удалить
@@ -177,9 +226,9 @@ function collectEditedData() {
         let id = parseInt(row.children[0].textContent.trim());
         const name = row.children[1].querySelector('input').value.trim();
         let price = row.children[2].querySelector('input').value.trim();
-        let category = products[id].category;
-        let type = products[id].type;
-        const supplier = products[id].supplier;
+        let category = JSON.parse(document.getElementById(`category-edit-${id}`).value);
+        let type = JSON.parse(document.getElementById(`type-edit-${id}`).value);
+        const supplier = JSON.parse(document.getElementById(`supplier-edit-${id}`).value);
         editedData.push({ id: id, name, price, category, type, supplier });
         makeRowReadOnly(row);
     });
@@ -336,23 +385,6 @@ async function createProductModal() {
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    let categories = await getCategories('name','','name','asc');
-    let types = await getProductTypes('name','','name','asc');
-    let suppliers = await getSuppliers('name','','name','asc');
-
-    let categoryContainer = document.getElementById('category');
-    let typeContainer = document.getElementById('type');
-    let supplierContainer = document.getElementById('supplier');
-    categories.forEach(category=>{
-        categoryContainer.innerHTML+=`<option value='${JSON.stringify(category)}'>${category.name}</option>`
-    })
-    types.forEach(type=>{
-        typeContainer.innerHTML+=`<option value='${JSON.stringify(type)}'>${type.name}</option>`
-    })
-    suppliers.forEach(supplier=>{
-        supplierContainer.innerHTML+=`<option value='${JSON.stringify(supplier)}'>${supplier.name}</option>`
-    })
-
 }
 
 function showProductModal() {
@@ -435,7 +467,7 @@ function addProductModalListener() {
 function addProductButton() {
     const addButton = document.createElement('button');
     const container = document.getElementById('actions-container');
-    addButton.textContent = 'Добавить продукт';
+    addButton.textContent = 'Добавить товар';
     addButton.classList.add('btn', 'btn-primary', 'mt-3');
     addButton.addEventListener('click', showProductModal);
     container.appendChild(addButton);
@@ -467,7 +499,7 @@ async function createProductAndSupplierModal() {
                 <div class="modal-body">
                     <form id="addProductAndSupplierForm">
                         <div class="form-group">
-                            <label for="nameInput1">Название продукта</label>
+                            <label for="nameInput1">Название товара</label>
                             <input type="text" class="form-control" id="nameInput1" required>
                         </div>
                         <div class="form-group">
@@ -580,7 +612,7 @@ async function addAddProductAndSupplierNameButton(){
     if(role==='role_admin'){
         const addProductAndSupplierButton = document.createElement('button');
         const container = document.getElementById('actions-container');
-        addProductAndSupplierButton.textContent = 'Добавить продукт и производителя';
+        addProductAndSupplierButton.textContent = 'Добавить товар и производителя';
         addProductAndSupplierButton.classList.add('btn', 'btn-primary', 'mt-3');
         addProductAndSupplierButton.addEventListener('click', showProductAndSupplierModal);
         container.appendChild(addProductAndSupplierButton);
@@ -596,13 +628,11 @@ let products = null;
 
     createProductModal();
     createProductAndSupplierModal();
-
-
     addProductModalListener();
     addProductAndSupplierModalListener();
 
     addProductButton();
     await addAddProductAndSupplierNameButton();
+    await addForeignKeysInEditorTableAndAddForm();
     addSearchButtonListener('id');
-
 })();

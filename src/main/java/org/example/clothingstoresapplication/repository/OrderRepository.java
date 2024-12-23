@@ -28,7 +28,7 @@ public interface OrderRepository extends CrudRepository<Order, Integer> {
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
     Page<Order> findAllById(Integer orderId, Pageable pageable);
-    Page<Order> findAllByStore(Store store, Pageable pageable);
-    Page<Order> findAllByStatus(OrderStatus orderStatus, Pageable pageable);
+    Page<Order> findAllByStoreLocationLikeIgnoreCase(String location, Pageable pageable);
+    Page<Order> findAllByStatusNameLikeIgnoreCase(String name, Pageable pageable);
 
 }
