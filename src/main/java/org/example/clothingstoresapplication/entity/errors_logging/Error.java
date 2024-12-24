@@ -1,5 +1,6 @@
-package org.example.clothingstoresapplication.entity.errors;
+package org.example.clothingstoresapplication.entity.errors_logging;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,8 @@ public class Error {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Nullable
     private String error;
     @Column(name = "error_date")
     private Timestamp timestamp;

@@ -1,13 +1,11 @@
 package org.example.clothingstoresapplication.exception_handling;
 
-import org.example.clothingstoresapplication.entity.errors.Error;
-import org.example.clothingstoresapplication.repository.errors.ErrorRepository;
+import org.example.clothingstoresapplication.entity.errors_logging.Error;
 import org.example.clothingstoresapplication.service.ErrorsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

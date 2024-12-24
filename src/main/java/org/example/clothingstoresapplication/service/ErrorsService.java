@@ -1,6 +1,6 @@
 package org.example.clothingstoresapplication.service;
 
-import org.example.clothingstoresapplication.entity.errors.Error;
+import org.example.clothingstoresapplication.entity.errors_logging.Error;
 import org.example.clothingstoresapplication.repository.errors.ErrorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

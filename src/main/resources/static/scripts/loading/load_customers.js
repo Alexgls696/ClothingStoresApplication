@@ -180,8 +180,7 @@ function collectEditedData() {
         const lastName = row.children[2].querySelector('input').value.trim();
         const email = row.children[3].querySelector('input').value.trim();
         const phoneNumber = row.children[4].querySelector('input').value.trim();
-        const orderId = row.children[5].querySelector('input').value.trim();
-        editedData.push({id: id, firstName, lastName, email, phoneNumber, orderId});
+        editedData.push({id: id, firstName, lastName, email, phoneNumber});
         makeRowReadOnly(row);
     });
     return editedData;
@@ -254,10 +253,6 @@ function createCustomerModal() {
                             <label for="phoneNumberInput">Номер телефона</label>
                             <input type="text" class="form-control" id="phoneNumberInput" placeholder="Введите номер телефона клиента" required>
                         </div>
-                        <div class="form-group">
-                            <label for="orderIdInput">ID заказа</label>
-                            <input type="number" class="form-control" id="orderIdInput" placeholder="Введите ID заказа (опционально)">
-                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -293,7 +288,6 @@ function addCustomerModalListener() {
         const lastName = document.getElementById('lastNameInput').value.trim();
         const email = document.getElementById('emailInput').value.trim();
         const phoneNumber = document.getElementById('phoneNumberInput').value.trim();
-        const orderId = document.getElementById('orderIdInput').value.trim();
 
         if (!firstName || !lastName || !email || !phoneNumber) {
             alert('Пожалуйста, заполните все обязательные поля.');
@@ -304,8 +298,7 @@ function addCustomerModalListener() {
             firstName,
             lastName,
             email,
-            phoneNumber,
-            orderId: orderId || null, // Если ID заказа пустой, отправляем null
+            phoneNumber
         };
 
         try {

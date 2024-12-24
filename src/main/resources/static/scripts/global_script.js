@@ -115,6 +115,6 @@ function showError(message,success) {
     console.log(role);
     if(role==='role_admin'){
         const menu = document.getElementById('menu');
-        menu.innerHTML+='<a href="/pages/customersProducts">Хранимые представления</a>'
+        menu.innerHTML+='<a href="/pages/customersProducts">Панель администратора</a>'
     }
 })();

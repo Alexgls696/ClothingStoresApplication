@@ -117,4 +117,14 @@ public class PagesController {
         model.addAttribute("user",user);
         return "stored_views/stores_and_employees_count";
     }
+
+    @RequestMapping("/logging")
+    public String showLoggingTable(){
+        return "stored_views/logging";
+    }
+
+    @RequestMapping("/errors")
+    public String showErrors(){
+        return "stored_views/errors";
+    }
 }

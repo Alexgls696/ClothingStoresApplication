@@ -302,13 +302,11 @@ async function createOrderProductModal() {
     })
 }
 
-// Показ модального окна
 function showOrderProductModal() {
     const modal = document.getElementById('addOrderProductModal');
     modal.style.display = 'block';
 }
 
-// Закрытие модального окна
 function hideOrderProductModal() {
     const modal = document.getElementById('addOrderProductModal');
     modal.style.display = 'none';
@@ -404,6 +402,6 @@ let orderProducts = null;
 
     createOrderProductModal();
     addOrderProductModalListener();
-   // addOrderProductButton();
+    addOrderProductButton();
     addSearchButtonListener('id');
 })();
