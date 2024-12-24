@@ -40,9 +40,6 @@ public class ProductsController {
         this.supplierRepository = supplierRepository;
     }
 
-    @Autowired
-    private LocalContainerEntityManagerFactoryBean entityManagerFactory;
-
     @GetMapping
     public Iterable<Product> getProducts() {
         return productRepository.findAll(Pageable.unpaged());
@@ -60,8 +57,9 @@ public class ProductsController {
     }
 
     @PostMapping("updateAllByParams")
-    public Product updateAllByParams(@RequestBody List<Product> products) {
+    public void updateAllByParams(@RequestBody List<Product> products) {
         for(var it:products){
+            System.out.println(it);
             productRepository.updateByParams(it.getId(),
                     it.getName(),
                     it.getPrice(),
@@ -69,8 +67,6 @@ public class ProductsController {
                     it.getType().getId(),
                     it.getSupplier().getId());
         }
-        Product last = productRepository.findLastProduct();
-        return last;
     }
 
     @PostMapping("/updateAll")
@@ -84,13 +80,13 @@ public class ProductsController {
     }
 
     @PostMapping("/addProductAndCustomer")
-    public void addProductAndCustomer(@RequestBody Product product) {
-
+    public Product addProductAndCustomer(@RequestBody Product product) {
         productRepository.addProductAndSupplier(product.getName(),
                 product.getPrice(),
                 (int)product.getCategory().getId(),
                 product.getType().getId(),
                 product.getSupplier().getName());
+        return productRepository.findLastProduct();
     }
 
     @DeleteMapping("/{id}")

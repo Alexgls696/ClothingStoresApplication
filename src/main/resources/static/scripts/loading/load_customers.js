@@ -136,7 +136,7 @@ function addHeadersListeners() {
 function makeRowEditable(row) {
     const cells = Array.from(row.children);
     cells.forEach((cell, index) => {
-        if (index > 0 && index < 6) { // Пропускаем ID
+        if (index > 0 && index < 5) { // Пропускаем ID
             const input = document.createElement('input');
             input.type = 'text';
             input.value = cell.textContent.trim();

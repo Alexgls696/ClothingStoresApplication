@@ -18,11 +18,11 @@ class Product {
     }
 }
 class Order {
-    constructor(id, orderDate, storeId, statusId) {
+    constructor(id, date, store, status) {
         this.id = id;
-        this.orderDate = orderDate;
-        this.storeId = storeId;
-        this.statusId = statusId;
+        this.date = date;
+        this.store = store;
+        this.status = status;
     }
 }
 
@@ -36,7 +36,7 @@ async function getOrders(findBy,findValue,sortBy,sortType) {
         const ordersData = await response.json();
         const data = ordersData.content;
         return data.map(order => {
-            return new Order(order.id, order.orderDate, order.storeId, order.statusId);
+            return new Order(order.id, order.date, order.store, order.status);
         });
     } catch (error) {
         console.log(error);
@@ -67,6 +67,38 @@ async function getProducts(findBy,findValue,sortBy,sortType) {
     }
 }
 
+async function addForeignKeysInEditorTable(){
+    let products = await getProducts('productName','','name','asc');
+    let orders = await getOrders('id','','id','asc');
+    orderProducts.forEach(orderProduct=>{
+        const productsContainer = document.getElementById(`product-edit-${orderProduct.id}`);
+        products.forEach(product=>{
+            productsContainer.innerHTML+=`<option value='${JSON.stringify(product)}' 
+            ${product.id===orderProduct.product.id ? `selected = "selected"` : ``}>${product.name} </option>`
+        });
+
+        const ordersContainer = document.getElementById(`order-edit-${orderProduct.id}`);
+        orders.forEach(order=>{
+            ordersContainer.innerHTML+=`<option value='${JSON.stringify(order)}' 
+            ${order.id===orderProduct.order.id ? `selected = "selected"` : ``}>${order.id} </option>`
+        })
+    });
+}
+
+async function addForeignKeysInEditorTableAndAddForm(){
+    let products = await getProducts('productName','','name','asc');
+    let orders = await getOrders('id','','id','asc');
+    let categoryContainer = document.getElementById('product');
+    let orderContainer = document.getElementById('order');
+    products.forEach(product=>{
+        categoryContainer.innerHTML+=`<option value='${JSON.stringify(product)}'>${product.name}</option>`
+    })
+    orders.forEach(order=>{
+        console.log(order);
+        orderContainer.innerHTML+=`<option value='${JSON.stringify(order)}'>${order.id}</option>`
+    })
+    await addForeignKeysInEditorTable();
+}
 
 const ip = location.host;
 
@@ -117,8 +149,8 @@ async function showOrderProducts(orderProducts) {
     orderProducts.forEach(orderProduct => {
         tbody.innerHTML += `<tr>
 <td>${orderProduct.id}</td>
-<td>${orderProduct.product.name}</td>
-<td>${orderProduct.order.id}</td>
+<td> <select id="product-edit-${orderProduct.id}" class="form-select"></select></div></td>
+<td> <select id="order-edit-${orderProduct.id}" class="form-select"></select></div></td>
 <td>${orderProduct.count}</td>
 ${access ? `<td>
 <button class="btn btn-danger btn-sm delete-button" data-id="${orderProduct.id}">
@@ -135,6 +167,7 @@ ${access ? `<td>
 async function showSortedOrderProducts(sortBy,sortType) {
     orderProducts = await getOrderProducts(findBy,findValue,sortBy,sortType);
     await showOrderProducts(orderProducts);
+    await addForeignKeysInEditorTable();
     addHeadersListeners();
 }
 
@@ -169,7 +202,7 @@ function addHeadersListeners() {
 function makeRowEditable(row) {
     const cells = Array.from(row.children);
     cells.forEach((cell, index) => {
-        if (index > 0 && index < 4) { // Пропускаем ID
+        if (index > 1 && index < 4 && index !== 2) { // Пропускаем ID
             const input = document.createElement('input');
             input.type = 'text';
             input.value = cell.textContent.trim();
@@ -209,10 +242,10 @@ function collectEditedData() {
     const editedData = [];
     rows.forEach(row => {
         const id = row.children[0].textContent.trim();
-        const productId = row.children[1].querySelector('input').value.trim();
-        const orderId = row.children[2].querySelector('input').value.trim();
+        const product = JSON.parse(document.getElementById(`product-edit-${id}`).value);
+        const order = JSON.parse(document.getElementById(`order-edit-${id}`).value);
         const count = row.children[3].querySelector('input').value.trim();
-        editedData.push({ id: id, productId, orderId, count });
+        editedData.push({ id: id, product, order, count });
         makeRowReadOnly(row);
     });
     return editedData;
@@ -290,16 +323,6 @@ async function createOrderProductModal() {
         </div>
     </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    let products = await getProducts('productName','','name','asc');
-    let orders = await getOrders('id','','id','asc');
-    let categoryContainer = document.getElementById('product');
-    let orderContainer = document.getElementById('order');
-    products.forEach(product=>{
-        categoryContainer.innerHTML+=`<option value='${JSON.stringify(product)}'>${product.name}</option>`
-    })
-    orders.forEach(order=>{
-        orderContainer.innerHTML+=`<option value='${JSON.stringify(order)}'>${order.id}</option>`
-    })
 }
 
 function showOrderProductModal() {
@@ -354,14 +377,15 @@ function addOrderProductModalListener() {
             const addedOrderProduct = await response.json();
             orderProducts.push(new OrderProduct(
                 addedOrderProduct.id,
-                addedOrderProduct.productId,
-                addedOrderProduct.orderId,
+                addedOrderProduct.product,
+                addedOrderProduct.order,
                 addedOrderProduct.count
             ));
 
             await showOrderProducts(orderProducts);
             addHeadersListeners();
             await addDeleteButtonListener('orderProducts','элемент');
+            await addForeignKeysInEditorTable();
             hideOrderProductModal(); // Закрытие модального окна
             document.getElementById('addOrderProductForm').reset(); // Очистка формы
         } catch (error) {
@@ -376,7 +400,7 @@ function addOrderProductModalListener() {
 function addOrderProductButton() {
     const addButton = document.createElement('button');
     const container = document.getElementById('actions-container');
-    addButton.textContent = 'Добавить продукт в заказ';
+    addButton.textContent = 'Добавить товар в заказ';
     addButton.classList.add('btn', 'btn-primary', 'mt-3');
     addButton.addEventListener('click', showOrderProductModal); // Открытие модального окна
     container.appendChild(addButton);
@@ -389,6 +413,7 @@ function addSearchButtonListener(sortBy){
         orderProducts = await getOrderProducts(findBy,findValue,sortBy,'asc');
         await showOrderProducts(orderProducts);
         await addDeleteButtonListeners('товар-заказ', 'orderProducts');
+        await addForeignKeysInEditorTable();
         addHeadersListeners();
     });
 }
@@ -404,4 +429,5 @@ let orderProducts = null;
     addOrderProductModalListener();
     addOrderProductButton();
     addSearchButtonListener('id');
+    await addForeignKeysInEditorTableAndAddForm();
 })();

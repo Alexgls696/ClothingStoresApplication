@@ -27,7 +27,7 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
 
 
     @Modifying
-    @Query(nativeQuery = true,value = "call main_schema.update_product_by_id(:id,:name,cast(:price as numeric),:category,:type,:supplier)")
+    @Query(nativeQuery = true,value = "call main_schema.update_product_by_id(:id,:name,cast(:price as numeric),:category,:supplier,:type)")
     void updateByParams(@Param("id") int id,
                             @Param("name") String name,
                             @Param("price") Double price,

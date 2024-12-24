@@ -478,9 +478,10 @@ function addSearchButtonListener(sortBy){
     document.getElementById('searchButton').addEventListener('click', async function() {
         findBy = document.getElementById('searchField').value;
         findValue = document.getElementById('searchInput').value;
-        categories = await getProducts(findBy,findValue,sortBy,'asc');
-        await showProducts(categories);
+        products = await getProducts(findBy,findValue,sortBy,'asc');
+        await showProducts(products);
         await addDeleteButtonListeners('товар', 'products');
+        await addForeignKeysInEditorTable();
         addHeadersListeners();
     });
 }
@@ -516,8 +517,8 @@ async function createProductAndSupplierModal() {
                             <select id="type1" class="form-select"></select>
                         </div>
                         <div class="form-group">
-                            <label for="nameInput1">Название производителя</label>
-                            <input type="text" class="form-control" id="nameInput1" required>
+                            <label for="supplierName">Название производителя</label>
+                            <input type="text" class="form-control" id="supplierName" required>
                         </div>
                     </form>
                 </div>
@@ -563,7 +564,7 @@ function addProductAndSupplierModalListener() {
         const price = document.getElementById('priceInput1').value.trim();
         let category = document.getElementById('category').value;
         let type = document.getElementById('type').value;
-        const supplierName = document.getElementById('nameInput1').value.trim();
+        const supplierName = document.getElementById('supplierName').value.trim();
         const supplier = new Supplier(0,supplierName);
 
         if (!name || !price || !name) {
@@ -592,8 +593,10 @@ function addProductAndSupplierModalListener() {
 
             hideProductAndSupplierModal();
             if (!response.ok) {
-                showError(response.message)
+                const data = await response.json();
+                showError(data.message)
                 closeButton.click();
+                return;
             }
             const addedProduct = await response.json();
             products.push(new Product(

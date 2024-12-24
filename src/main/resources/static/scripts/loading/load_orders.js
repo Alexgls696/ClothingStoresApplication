@@ -396,9 +396,10 @@ function addSearchButtonListener(sortBy){
     document.getElementById('searchButton').addEventListener('click', async function() {
         findBy = document.getElementById('searchField').value;
         findValue = document.getElementById('searchInput').value;
-        categories = await getOrders(findBy,findValue,sortBy,'asc');
-        await showOrders(categories);
+        orders = await getOrders(findBy,findValue,sortBy,'asc');
+        await showOrders(orders);
         await addDeleteButtonListeners('заказ', 'orders');
+        await addForeignKeysInEditorTable();
         addHeadersListeners();
     });
 }
